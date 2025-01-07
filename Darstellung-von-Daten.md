@@ -58,8 +58,8 @@ data %>%
   select(hv_univ) %>%
   boxplot()
 ```
+![download](https://github.com/user-attachments/assets/1c4925a1-a345-4877-b9b1-4055d1d79988)
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-3-1.jpeg)<!-- -->
 
 Wenn wir mehrer Variablen gelichzeitig dargestellt haben möchten so
 ergänzen wir sich einfach in `select()`.
@@ -81,7 +81,8 @@ data %>%
   )
 ```
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-4-1.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/11595791-a1ce-4208-b780-d9b895863693)
+
 
 … oder auch Farben der TU Dresden
 (<https://tu-dresden.de/tu-dresden/kontakte-services/cd>)
@@ -96,8 +97,8 @@ data %>%
     col = c("#0069b4", "#e0318a", "#00305D")
   )
 ```
+![download](https://github.com/user-attachments/assets/2abf8391-21dc-452a-9893-fcc65b291e65)
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-5-1.jpeg)<!-- -->
 
 Es gibt bei der Darstellung vielfältige Möglichkeiten, welche alle unter
 der Hilfeseite `?boxplot()` eingesehen werden können.
@@ -152,8 +153,9 @@ geom_boxplot()
 
     ## Warning: Removed 994 rows containing non-finite outside the scale range
     ## (`stat_boxplot()`).
+    
+![download](https://github.com/user-attachments/assets/feb7fcf2-a9b0-4f16-865f-3086ce01a116)
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-6-1.jpeg)<!-- -->
 
 Für die Darstellung des selben Boxplots lohnt sich dieser Aufwand eher
 weniger. Spannender wird es allerdings, wenn wir die Verteilung zum
@@ -169,7 +171,8 @@ data %>%
     ## Warning: Removed 157 rows containing non-finite outside the scale range
     ## (`stat_boxplot()`).
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-7-1.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/82989fab-5d36-4f85-822b-90f58f43289e)
+
 
 Für den gleichen Fall können wir ebenso eine Violin-Grafik ausgeben
 lassen. Sie gibt uns eine detailiertere Ansicht der Verteilung.
@@ -184,7 +187,8 @@ data %>%
     ## Warning: Removed 157 rows containing non-finite outside the scale range
     ## (`stat_ydensity()`).
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-8-1.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/33279690-c4a5-4467-8a56-82b32929fd4a)
+
 
 Auch hier können vielfältige grafische Anpassungen vorgenommen werden,
 auf die allerdings nicht weiter eingegangen wird.
@@ -211,7 +215,8 @@ data %>%
   qqline()
 ```
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-9-1.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/c80a8238-8fe7-4916-9f87-4e7639d058ee)
+
 
 ``` r
 #Oder auch einfacherer ohne dplyr
@@ -220,7 +225,8 @@ qqnorm(data$hv_univ)
 qqline(data$hv_univ)
 ```
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-9-2.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/e82d4579-73a0-4b70-9283-f1828f34cfcb)
+
 
 Mit dem Befehl `deframe()` des *tibble*-Paketes transformieren wir den
 ausgewählten Datensatz in eine Liste, damit die Daten für den
@@ -247,7 +253,8 @@ data %>%
   qqPlot()
 ```
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-10-1.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/24cde633-fdad-45a9-bf48-c719c61d346c)
+
 
     ## [1] 14762 13514
 
@@ -259,7 +266,8 @@ data %>%
   qqPlot()
 ```
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-10-2.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/a591bc92-5cab-4bf3-998b-d66000591e62)
+
 
     ## [1] 172 219
 
@@ -277,7 +285,8 @@ ggplot(data, aes(sample = hv_univ)) +
     ## Warning: Removed 320 rows containing non-finite outside the scale range
     ## (`stat_qq_line()`).
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-11-1.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/b5977b66-1a1f-4316-a240-7a89619c4a09)
+
 
 ``` r
 data %>%
@@ -287,7 +296,8 @@ data %>%
   geom_qq_line()
 ```
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-11-2.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/f3265640-8b16-4d88-a852-810d51abe6c7)
+
 
 Alle Grafiken können wie bei den Boxplots grafisch angepasst werden.
 
@@ -303,8 +313,9 @@ data %>%
   deframe() %>%
   hist()
 ```
+![download](https://github.com/user-attachments/assets/9b387499-bf4a-4ff3-96c9-66d679740308)
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-12-1.jpeg)<!-- -->
+
 
 Wenn wir den Standard-Befehl `hist()` verwenden müssen wir noch einige
 Anpassungen vornehmen, damit die Grafik besser interpretierbar wird.
@@ -319,7 +330,8 @@ data %>%
   hist(., breaks = "Scott")
 ```
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-13-1.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/2d92c71a-63f2-4b26-80cd-5080e9925b8b)
+
 
 ``` r
 data %>%
@@ -329,7 +341,8 @@ data %>%
   hist(., breaks = seq(0.5,7.5,1))
 ```
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-13-2.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/aee26112-8e7d-4d87-8206-66f16f47902e)
+
 
 Mit dem Befehl `seq()` (Sequenz) geben wir einen Vektor vor, der von 0,5
 bis 7,5 mit jeweils einem Abstand von 1 läuft. Wir verwenden diesen
@@ -348,7 +361,8 @@ data %>%
   hist(.,breaks = seq(0.5,7.5,1),freq = FALSE)
 ```
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-14-1.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/5ee9b037-0d6e-4139-b472-25961354ee95)
+
 
 Wollen wir noch die Beschreibung und Farben anpassen so können wir das
 wie folgt machen.
@@ -367,7 +381,8 @@ data %>%
        col = "#0069b4")
 ```
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-15-1.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/88efe424-9457-43ab-8d81-12275def6544)
+
 
 Farben und Beschriftung können hier auch hinzugefügt werden –\>
 `?hist()`.
@@ -383,7 +398,8 @@ data %>%
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-16-1.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/0f598c7e-9413-4360-abdf-6e0defcc93a9)
+
 
 Auch hier können wir wieder verschiedene Anpassungen vornehmen.
 
@@ -403,7 +419,8 @@ data %>%
     ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
     ## generated.
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-17-1.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/3afb2d73-d9c0-4e79-abfa-ed1de8653dd4)
+
 
 Spannender ist die Verwendung von ggplot bei kontinuierlichen Daten,
 hier kann es allerdings schnell komplexer werden.
@@ -421,7 +438,8 @@ data %>%
     ## Warning: Removed 320 rows containing non-finite outside the scale range
     ## (`stat_density()`).
 
-![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-18-1.jpeg)<!-- -->
+![download](https://github.com/user-attachments/assets/475111f7-9dbf-4ae6-b7b0-9d686819c238)
+
 
 ### Speichern von Grafiken
 
