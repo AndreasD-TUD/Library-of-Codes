@@ -4,6 +4,7 @@ Andreas Deim
 2024-12-01
 
 - [Download und Einrichtung von R, R-Studio](#download-und-einrichtung-von-r-r-studio)
+  - [Unterstützung für macOS](#unterstützung-für-macos)
 - [Grundlegende Information:](#grundlegende-information)
   - [R-Studio](#r-studio)
   - [R-Markdown](#r-markdown)
@@ -22,6 +23,12 @@ R und R-Studio lassen sich ganz von der folgenden Website herunterladen:
 
 Nach der Installation ist es wichtig den Rechner neu zu starten,
 andernfalls kann es zu Problemen bei der Ausführung von R kommen.
+
+## Unterstützung für macOS
+
+Da es bei der Anwendung von R auf macOS zu verschiedenen Komplikationen, vor allem bei der Installation von Paketen, kommen kann, lässt sich zur Unterstützung des Betriebssystems zusätzlich XQuartz installieren. 
+
+Diese Installation ist optional: <https://www.xquartz.org/>
 
 # Grundlegende Information:
 
