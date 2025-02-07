@@ -173,7 +173,7 @@ R ist wie bereits erwähnt eine skriptbasierte Sprache. Das bedeutet wir
 führen unsere Berechnungen mit geschriebenen Befehlen aus. Doch bevor
 wir dazu kommen, erstmal grundlegende Informationen.
 
-Sofern dieses Skript das erste Mal geöffnet ist sollte das linke obere
+Sofern dieses Skript das erste Mal geöffnet ist sollte das rechte obere
 Fenster “Environment” noch lehr sein. Dort werden die Variablen
 angezeigt, welche wir zum Berechnen verwenden. Der erste Schritt wird
 demnach erstmal sein, probeweise **Variablen anzulegen**
@@ -183,7 +183,7 @@ Dies funktioniert wie folgt:
 *Hinweis: Das ausführen eines Befehls in einer Zeile ist durch die
 Tastenkombination STRG + Enter möglich. Soll ein kompletter Abschnitt
 ausgeführt werden, so kann dieser markiert und mit jener
-Tastenkombination ausgeführt werden. Die visuelle Oberfläche von Quarto
+Tastenkombination ausgeführt werden. Die visuelle Oberfläche von RMarkdown
 ermöglicht ebenso die Nutzung von Buttons, welche sich in den
 “executable cells” (Befehlszellen) oben rechts befinden. Damit kann die
 komplette grau hinterlegte Box ausgeführt werden.*
