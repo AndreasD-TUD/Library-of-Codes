@@ -3,15 +3,25 @@ Einführung in R
 Andreas Deim
 2024-12-01
 
+- [Download und Einrichtung von R, R-Studio](#download-und-einrichtung-von-r-r-studio)
 - [Grundlegende Information:](#grundlegende-information)
   - [R-Studio](#r-studio)
   - [R-Markdown](#r-markdown)
-- [Download und Einrichtung von R, R-Studio](#download-und-einrichtung-von-r-r-studio)
 - [Schreiben in R](#schreiben-in-r)
   - [Zu Beginn](#zu-beginn)
   - [Dateipfad setzen und suchen](#dateipfad-setzen-und-suchen)
   - [Pakete installieren und laden](#pakete-installieren-und-laden)
   - [Youtube-Empfehlung](#youtube-empfehlung)
+ 
+# Download und Einrichtung von R, R-Studio
+
+R und R-Studio lassen sich ganz von der folgenden Website herunterladen:
+<https://posit.co/download/rstudio-desktop/>
+
+<img src="https://github.com/user-attachments/assets/d5323334-3f68-452d-8cdd-f57ccd892012" alt="" width="1960"/>
+
+Nach der Installation ist es wichtig den Rechner neu zu starten,
+andernfalls kann es zu Problemen bei der Ausführung von R kommen.
 
 # Grundlegende Information:
 
@@ -147,16 +157,6 @@ angeklickt werden.
 ``` r
 install.packages("rmarkdown")
 ```
-
-# Download und Einrichtung von R, R-Studio
-
-R und R-Studio lassen sich ganz von der folgenden Website herunterladen:
-<https://posit.co/download/rstudio-desktop/>
-
-<img src="https://github.com/user-attachments/assets/d5323334-3f68-452d-8cdd-f57ccd892012" alt="" width="1960"/>
-
-Nach der Installation ist es wichtig den Rechner neu zu starten,
-andernfalls kann es zu Problemen bei der Ausführung von R kommen.
 
 # Schreiben in R
 
