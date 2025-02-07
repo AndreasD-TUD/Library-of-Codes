@@ -12,8 +12,28 @@ Andreas Deim
   - [Zu Beginn](#zu-beginn)
   - [Dateipfad setzen und suchen](#dateipfad-setzen-und-suchen)
   - [Pakete installieren und laden](#pakete-installieren-und-laden)
-  - [Youtube-Empfehlung](#youtube-empfehlung)
- 
+  - [Youtube-Empfehlung](#youtube-empfehlung)](https://tu-dresden.de/gsw/phil/iso)
+
+# Verwendete Befehle
+
+------------------------------------------------------------------------
+
+`<-` = Wert speichern  
+`c()` = Erstellen eines Vektors  
+`rep()` = Erstellen eines Vektors, Wiederholung eines Wertes  
+`seq()` = Erstellen eines Vektors, Festgelegte abstuffungen zwischen
+einem Minimun und Maximum  
+`mean(..., na.rm = TRUE)` = Mittelwertberechnung (mit Option NA-Werte
+entfernen)  
+`?` = Hilfeseite aufrufen  
+`as.numeric()` = In numerischen Wert umwandeln  
+`getwd()` = Arbeitspfad auslesen  
+`setwd()` = Arbeitspfad setzen  
+`install.packages()` = Pakete installieren  
+`library()` = Pakete aktivieren
+
+------------------------------------------------------------------------
+
 # Download und Einrichtung von R, R-Studio
 
 R und R-Studio lassen sich ganz von der folgenden Website herunterladen:
@@ -174,7 +194,7 @@ führen unsere Berechnungen mit geschriebenen Befehlen aus. Doch bevor
 wir dazu kommen, erstmal grundlegende Informationen.
 
 Sofern dieses Skript das erste Mal geöffnet ist sollte das rechte obere
-Fenster “Environment” noch lehr sein. Dort werden die Variablen
+Fenster “Environment” noch leer sein. Dort werden die Variablen
 angezeigt, welche wir zum Berechnen verwenden. Der erste Schritt wird
 demnach erstmal sein, probeweise **Variablen anzulegen**
 
@@ -183,7 +203,7 @@ Dies funktioniert wie folgt:
 *Hinweis: Das ausführen eines Befehls in einer Zeile ist durch die
 Tastenkombination STRG + Enter möglich. Soll ein kompletter Abschnitt
 ausgeführt werden, so kann dieser markiert und mit jener
-Tastenkombination ausgeführt werden. Die visuelle Oberfläche von RMarkdown
+Tastenkombination ausgeführt werden. Die visuelle Oberfläche von Quarto
 ermöglicht ebenso die Nutzung von Buttons, welche sich in den
 “executable cells” (Befehlszellen) oben rechts befinden. Damit kann die
 komplette grau hinterlegte Box ausgeführt werden.*
@@ -200,27 +220,89 @@ variable
 
     ## [1] 42
 
+Hinweis: Mit `#` können wir in unser Skript Kommentare einbauen. Diese
+werden nicht als Befehl ausgeführt.
+
 Nun können wir in der Environment unsere Variable “variable” mit dem
 dazugehörigen Wert sehen.
 
-Legen wir wie folgt weitere Variablen mit verschiedenen **Datentypen**
-an.
+## Datentypen
+
+Legen wir wie folgt weitere Variablen mit verschiedenen wichtigsten
+**Datentypen** an.
+
+**Numeric  
+**Wir weisen `x` wieder die Zahl 42 zu. `x` wir als Datentyp “numeric”
+gespeichert.
 
 ``` r
 # Wir weisen "x" wieder die Zahl 42 zu. x wir als Datentyp "numeric" gespeichert. 
 x <- 42
+```
 
-# y soll die Frage "Was ist der Sinn des Lebens" enthalten. Um dies zu ermöglichen müssen wir Textzeichen immer in " " anführen. y wird als Datentyp "character" gespeichert.
+**Charakter**  
+`y` soll die Frage “Was ist der Sinn des Lebens” enthalten. Um dies zu
+ermöglichen müssen wir Textzeichen immer in `" "` anführen. `y` wird als
+Datentyp “character” gespeichert.
+
+``` r
 y <- "Was ist der Sinn des Lebens?"
+```
 
+**Logical**  
+`z` soll einen Boolean-Wert (in R als logical bezeichnet) beinhalten.
+Dieser ist wichtig, wenn wir eine Berechnung unter bestimmten
+Bedingungen durchführen wollen, die Bedingungen also WAHR oder FALSCH
+sind. Boolesche Werte sind in R `FALSE` oder `TRUE`, sie können auch
+abgekürzt als `F` oder `T` geschrieben werden. Diese Werte werden von
+R-Studio hellblau gefärbt. `z` wird als Datenyp “logical” gespeichert
 
-# z soll einen Boolean-Wert (in R als logical bezeichnet) beinhalten. Dieser ist wichtig, wenn wir eine Berechnung unter bestimmten Bedingungen durchführen wollen, die Bedingungen also WAHR oder FALSCH sind. Boolesche Werte sind in R "FALSE" oder "TRUE", sie können auch abgekürzt als "F" oder "T" geschrieben werden. Diese Werte werden von R-Studio hellblau gefärbt. z wird als Datenyp "logical" gespeichert
+``` r
 z <- FALSE
+```
 
-# v soll ein Vektor sein. Vektoren enthalten ein Reihe von Werten, welche verschiedenen Datentypen angehören können. Die Werte werden in einer Reihe aufgelistet. Um einen Vektor zu generieren benötigen wir den Befehl c(). Zu den Befehlen gleich mehr. 
-# In dem Vektor kommt die Bezeichnung NA vor, dies steht stellvertretend für fehlende Werte. Ein fehlender Wert kann entstehen, wenn eine befragte Person in einem Fragebogen keine Auskunft gibt.
+**Vektor**  
+`v` soll ein Vektor sein. Vektoren enthalten ein Reihe von Werten,
+welche verschiedenen Datentypen angehören können. Die Werte werden in
+einer Reihe aufgelistet. Um einen Vektor zu generieren benötigen wir den
+Befehl `c()`. Zu den Befehlen gleich mehr. In dem Vektor kommt die
+Bezeichnung `NA` vor, dies steht stellvertretend für fehlende Werte. Ein
+fehlender Wert kann entstehen, wenn eine befragte Person in einem
+Fragebogen keine Auskunft gibt.
+
+``` r
 v <- c(1, 2, 4, 5, 1, "2", NA, 3, 7, 9)
 ```
+
+Ein Vektor kann auch mit weiteren Befehlen erstellt werden.
+Beispielsweise *`rep()`* und *`seq()`*. Bei `rep()` geben wir an, dass
+ein bestimmter Wert bestimmte Male wiederholt werden soll. Mit `seq()`
+können wir einen Vekor generieren, welcher zwischen einem Minimum und
+Maximum Werte in bestimmten Schritten ausgibt.  
+  
+Im folgenden generieren wir einen Vektor `v_rep` welcher aus 10 Einsen
+besteht und einen Vektor `v_seq` welcher alle Were von 1 bis 10 in
+Einerschritten beinhaltet. Anschließend lassen wir uns die Vektoren
+ausgeben.
+
+``` r
+v_rep <- rep(1,10)
+v_rep
+```
+
+    ##  [1] 1 1 1 1 1 1 1 1 1 1
+
+``` r
+v_seq <- seq(1,10, 1)
+v_seq
+```
+
+    ##  [1]  1  2  3  4  5  6  7  8  9 10
+
+Es gibt noch viele weitere Datentypen, welche auch Paktespezifisch sein
+können.
+
+## Befehle
 
 Und nun zu den **Befehlen**. Ein Befehl beginnt immer der Bezeichnung
 des Befehles gefolgt von ( ). Besonders wichtig ist bei einem Befehl die
@@ -229,7 +311,7 @@ Befehles). Auf der bereits erwähnten Hilfeseite findet sich in der Regel
 zu jedem Befehl eine detailierte Beschreibung der Syntax.
 
 Wir wollen nun Probeweise den Mittelwert des Vektors “v” berechnen. Dies
-ist mit dem Befehl mean() möglich.
+ist mit dem Befehl *`mean()`* möglich.
 
 *Hinweis: Bei dem Schreiben von Befehlen empfiehlt R-Studio automatisch
 existierende Funktionen. Diese können dann mit TAB alternativ ausgewählt
@@ -253,7 +335,7 @@ Programmiersprache neu gelernt wird). Debuggen bedeutet nichts anderes
 als das Entfernen von Fehlern. Bei Auftauchenden Fehlern kann entweder
 das Internet gefragt werden oder man überprüft zuerst die Syntax.
 
-Zweiteres wollen wir mit ?mean() versuchen.
+Zweiteres wollen wir mit `?mean()` versuchen.
 
 ``` r
 ?mean()
@@ -288,8 +370,8 @@ eingegeben haben. Da es sich hier um den Datentyp charakter handelt,
 wandelt R auch alle anderen Zahlen in den Vektor zu den Datentyp
 charakter um. R will dahingehend vereinheitlichen.
 
-Um dieses Problem zu lösen können wir mit dem Befehl as.numeric() den
-Datentyp ändern.
+Um dieses Problem zu lösen können wir mit dem Befehl *`as.numeric()`*
+den Datentyp ändern.
 
 ``` r
 v
@@ -328,7 +410,7 @@ v
 
     ##  [1]  1  2  4  5  1  2 NA  3  7  9
 
-## Dateipfad setzen und suchen
+# Dateipfad setzen und suchen
 
 Nach dem ein neues Projekt angelegt wurde, wird auch immer ein
 Arbeitsort festgelegt, in welchem das Projekt als solches, die
@@ -336,9 +418,13 @@ generierten und zu ladenden Datensätz, wie auch die gespeicherten
 Grafiken oder auch Tabellen zu finden sind. Manchmal kann es notwendig
 sein diesen Ort zu ändern. Die ist entweder in der Registerleiste oben
 links unter “Session” –\> “Set Working Directory” oder über den Befehl
-setwd() möglich.
+*`setwd()`* möglich.
 
-Bevor wir eine neuen Speicherort setzen können wir und mit getwd()
+Der Arbeitsort wird automatisch immer dort gesetzt, von wo aus ihr das
+jeweilige Skript geöffnet habt. Es kann sich demnach anbieten, alle
+Skripte in den Arbeitsordner zu verschieben.
+
+Bevor wir eine neuen Speicherort setzen können wir und mit *`getwd()`*
 unseren aktuellen einsehen
 
 ``` r
@@ -347,7 +433,9 @@ getwd()
 
     ## [1] "C:/Users/Arbeitsdesktop/OneDrive/Dokumente/SHK TU Dresden/Tutorium Quanti/Quanti MA WS2425"
 
-Und nun wird ein neuer Dateipfad gesetzt. (Beachte die Richtung des “/”)
+Und nun wird ein neuer Dateipfad gesetzt.  
+(Beachte die Richtung des “/” \| Bei Windows `"C:/..."` \| Bei Mac
+`"~/..."`)
 
 ``` r
 # Beispiel:
@@ -357,7 +445,7 @@ getwd()
 
     ## [1] "C:/Users/Arbeitsdesktop/OneDrive/Dokumente/SHK TU Dresden/Tutorium Quanti"
 
-## Pakete installieren und laden
+# Pakete installieren und laden
 
 Die Grundausstattung von R enthält viele Funktionen, wie der Berechnung
 des Mittelwertes, des Medians, der Standardabweichung, und so weiter. Es
@@ -368,36 +456,35 @@ Topic Modeling).
 
 Diese zusätzlichen Funktionen finden sich in bestimmten Paketen, die
 mehrere weiter Funktionen beinhalten. Wichtige Pakete sind zum Beispiel:
-“dplyr”, “psych”, “car”, “ggplot2” oder auch “foreign”.
+“*dplyr*”, “*psych*”, “*car*”, “*ggplot2*” oder auch “*haven*”.
 
 Diese Pakete müssen einmalig installiert und bei jedem Neustart von R
 aktiviert (geladen) werden.
 
-Die Installation ist mit dem Befehl install.packages(“Paketname”)
+Die Installation ist mit dem Befehl *`install.packages("Paketname")`*
 möglich:
 
 ``` r
 install.packages("dplyr")
-install.packages("tidyr")
 install.packages("psych")
 install.packages("car")
 install.packages("ggplot2")
-install.packages("foreign")
+install.packages("haven")
 ```
 
-Mit dem Befehl library(Paketname) werden diese anschließend aktiviert.
-Dieser Befehl steht in der Regel immer am Anfang eines Skriptes.
+Mit dem Befehl *`library(Paketname)`* werden diese anschließend
+aktiviert. Dieser Befehl steht in der Regel immer am Anfang eines
+Skriptes.
 
 ``` r
 library(dplyr)
-library(tidyr)
 library(psych)
 library(car)
 library(ggplot2)
-library(foreign)
+library(haven)
 ```
 
-## Youtube-Empfehlung
+# Youtube-Empfehlung
 
 Soweit erstmal das wichtigste Fundament für die weitere Arbeit. Im
 Rahmen des Kurses werden noch viele weitere Befehle hinzukommen und es
