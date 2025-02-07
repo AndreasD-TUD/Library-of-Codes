@@ -1,6 +1,6 @@
 # Grundlagen der R-Programmierung
 
-Willkommen zu diesem Repository! Hier findest du strukturierte Ressourcen, Beispiele und Übungen, um die Grundlagen der R-Programmierung zu erlernen.
+Willkommen! Hier findest du strukturierte Ressourcen, Beispiele und Übungen, um die Grundlagen der R-Programmierung zu erlernen.
 
 ---
 
