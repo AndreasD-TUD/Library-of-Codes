@@ -12,7 +12,7 @@ Andreas Deim
   - [Zu Beginn](#zu-beginn)
   - [Dateipfad setzen und suchen](#dateipfad-setzen-und-suchen)
   - [Pakete installieren und laden](#pakete-installieren-und-laden)
-  - [Youtube-Empfehlung](#youtube-empfehlung)]
+  - [Youtube-Empfehlung](#youtube-empfehlung)
 
 # Verwendete Befehle
 
