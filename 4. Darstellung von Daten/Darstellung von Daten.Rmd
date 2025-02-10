@@ -32,9 +32,7 @@ output:
 
 ------------------------------------------------------------------------
 
-# 
-
-## Pakete Laden
+# Pakete Laden
 
 ```{r, message=FALSE}
 library(haven)
@@ -51,9 +49,9 @@ Datensatz einlesen (Wenn nötig)
 data <- read_sav("ESS10_HV.sav") 
 ```
 
-## Grafische Darsrellung
+# Grafische Darsrellung
 
-### Boxplot
+## Boxplot
 
 Ein **Boxplot** (oder Box-and-Whisker-Plot) zeigt auf einen Blick zentrale Tendenzen und Streuungen von Daten. Die wichtigsten Elemente eines Boxplots sind:
 
@@ -110,7 +108,7 @@ data %>%
 
 Es gibt bei der Darstellung vielfältige Möglichkeiten, welche alle unter der Hilfeseite `?boxplot()` eingesehen werden können.
 
-**Ausblick ggplot2:**
+## Ausblick ggplot2:
 
 Desweiteren kann man auch komplexere Grafiken mit *ggplot2* erstellen, welche in manchen Fällen etwas mehr Vorarbeit erfordert.
 
@@ -186,7 +184,7 @@ data %>%
     facet_wrap(~cntry)
 ```
 
-### QQ-Plot
+## QQ-Plot
 
 Das **QQ-Plot (Quantile-Quantile-Plot)** verwenden wir, um zu überprüfen, ob eine Menge von Daten einer bestimmten theoretischen Verteilung folgt. In unserem Fall der Normalverteilung.
 
@@ -246,7 +244,7 @@ data %>%
 
 Alle Grafiken können wie bei den Boxplots grafisch angepasst werden.
 
-### Histogram
+## Histogram
 
 Das Histogramm gibt und einen schönen Überblick über die Verteilung. Auch hier werden wieder verschiedene Möglichkeiten aufgezeigt.
 
@@ -335,7 +333,7 @@ data %>%
   stat_density(fill="#e0318a", color="black", alpha=0.3)
 ```
 
-### Speichern von Grafiken
+## Speichern von Grafiken
 
 Das Speichern von Grafiken erfolgt über verschiedene Möglichkeiten. Am einfachsten ist die Verwendung des Befehles `png()` (andere Dateiformate wie jpeg oder bmp auch möglich).
 
@@ -368,3 +366,9 @@ die Breite und Höhe des Bildes `width = 1280, height = 720`\
 und die größe des Textes `pointsize = 20`.
 
 Je nach größe des Bildes muss auch die Textgröße angepasst werden.
+
+## R-Graph-Gallery
+
+Auf der folgenden Website können noch viele weitere Möglichkeiten für die Erstellung einer Grafik gefunden werden:
+
+<https://r-graph-gallery.com/>
