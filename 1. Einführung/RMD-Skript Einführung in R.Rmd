@@ -1,7 +1,7 @@
 ---
 title: "Einführung in R"
 author: "Andreas Deim"
-date: "2024-12-01"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   github_document:
     toc: true
@@ -97,7 +97,7 @@ Die Grafiken können direkt mit über die Schaltfläche „Export“ gespeichert
 
 ![](images/Bild8-01.png){width="461"}
 
-Pakete sind ein wichtiger Bestandteil in der Arbeit mit R. Pakete liefern vorgefertigte Funktionen und Befehle, welche wir für die Analyse von Daten benötigen. In diesem Fenster können Pakete aktiviert oder auch deaktiviert werden. Dies ist nötig, um auf die Befehle in den Paketen zuzugreifen. Alternativ geschieht das geläufig durch den Befehl library(). Neben der Standardausrüstung die R bereit hält (z.B. Paket „base“) sind auch zusätzliche Pakete aus der Community wie „dplyr“ und „ggplot2“ von hoher Relevanz. Ersteres vereinfacht die Programmierung, zweiteres ermöglicht komplexere grafische Ausgaben.
+Pakete sind ein wichtiger Bestandteil in der Arbeit mit R. Pakete liefern vorgefertigte Funktionen und Befehle, welche wir für die Analyse von Daten benötigen. In diesem Fenster können Pakete aktiviert oder auch deaktiviert werden. Dies ist nötig, um auf die Befehle in den Paketen zuzugreifen. Alternativ geschieht das geläufig durch den Befehl *`library()`*. Neben der Standardausrüstung die R bereit hält (z.B. Paket „base“) sind auch zusätzliche Pakete aus der Community wie „dplyr“ und „ggplot2“ von hoher Relevanz. Ersteres vereinfacht die Programmierung, zweiteres ermöglicht komplexere grafische Ausgaben.
 
 ![](images/Bild9-01.png){width="465"}
 
