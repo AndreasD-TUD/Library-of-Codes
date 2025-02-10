@@ -39,7 +39,7 @@ entfernen)
 R und R-Studio lassen sich ganz von der folgenden Website herunterladen:
 <https://posit.co/download/rstudio-desktop/>
 
-<img src="https://github.com/user-attachments/assets/d5323334-3f68-452d-8cdd-f57ccd892012" alt="" width="1960"/>
+<img src="https://github.com/user-attachments/assets/177baac7-d696-4b00-abb1-66b245072729" alt="" width="1960"/>
 
 Nach der Installation ist es wichtig den Rechner neu zu starten,
 andernfalls kann es zu Problemen bei der Ausführung von R kommen.
@@ -70,11 +70,11 @@ heruntergeladen und installiert.
 
 Im folgenden die wichtigsten Bestandteile in R-Studio.
 
-<img src="https://github.com/user-attachments/assets/7869dc4e-3dd9-4d8a-8da5-2b7fce96389a" alt="" width="1960"/>
+<img src="https://github.com/user-attachments/assets/b12c32d7-c236-4e5a-929d-bf294c9ae1fd" alt="" width="1960"/>
 
 ------------------------------------------------------------------------
 
-<img src="https://github.com/user-attachments/assets/b08d6527-15e2-4847-b4ad-fc83a82cdc34" alt="" width="400"/>
+<img src="https://github.com/user-attachments/assets/0b47c6f1-b4ba-42f9-9cfa-966f32f8e9d0" alt="" width="400"/>
 
 In dem oberen Registerfeld können die wichtigsten Funktionen genutzt
 werden. Das Laden von kompletten Skripten, die Generierung neuer
@@ -82,8 +82,7 @@ Projekte und setzen von Arbeitspfaden (Wo Daten geladen und gespeichert
 werden sollen) ist hier möglich ohne die Nutzung der Konsole.
 
 ------------------------------------------------------------------------
-<img src="https://github.com/user-attachments/assets/8f6cbde9-36df-41d6-bf94-9a21ef15424c" alt="" width="700"/>
-
+<img src="https://github.com/user-attachments/assets/651b3a77-5b1f-486c-9c36-537d48969fca" alt="" width="700"/>
 In dem oberen linken Fenster finden sich die Skripte, welche vorab
 geschrieben wurden. Hier werden die Befehle der Reihe nach
 eingeschrieben und mit STRG + Enter ausgeführt.
@@ -95,7 +94,7 @@ Kommentare werden Grün hervorgehoben. Insbesondere bei komplexeren
 Skripten empfiehlt sich die Verwendung von Kommentaren.
 
 ------------------------------------------------------------------------
-<img src="https://github.com/user-attachments/assets/36bd67b0-2c6f-4484-8851-ac3fc55c5af5" alt="" width="700"/>
+<img src="https://github.com/user-attachments/assets/3c0e84f2-a49d-41b3-91ce-dee0f83a105f" alt="" width="700"/>
 
 In dem unteren linken Fenster befindet sich die Befehlskonsole von R.
 Ohne die Oberfläche R-Studio, würde nur dieses Feld für statistische
@@ -113,7 +112,7 @@ Division durch 0, so werden in diesem Feld rot gefärbte Fehlermeldungen
 ausgegeben.
 
 ------------------------------------------------------------------------
-<img src="https://github.com/user-attachments/assets/a773cb70-4813-407a-926e-dab6e9ed61fc" alt="" width="700"/>
+<img src="https://github.com/user-attachments/assets/c5c4c871-5cf8-4d35-9584-f932aedb36ee" alt="" width="700"/>
 
 In der oberen rechten Ecke befindet sich das Environment. Hier werden
 alle geladenen und gesetzten Variablen und Datensätze angezeigt. Eine
@@ -135,20 +134,20 @@ manchen Fällen hilfreich sein, wenn der Speicher voll ist oder ein neues
 Skript zur Berechnung von neuen Datensätzen verwendet wird.
 
 ------------------------------------------------------------------------
-<img src="https://github.com/user-attachments/assets/9bdce90b-99e2-4373-877a-f16b2bd50b82" alt="" width="600"/>
+<img src="https://github.com/user-attachments/assets/a348fdd1-d248-4d76-ba8c-4471c28e007a" alt="" width="600"/>
 
 In dem rechten unteren Fenster werden die Dateien in dem aktuellen
 Arbeitspfad, generierte Grafiken, geladene Pakete und die Hilfeseite
 angezeigt.
 
-<img src="https://github.com/user-attachments/assets/d749dbac-02ad-4d55-bc0a-0412cfa96140" alt="" width="600"/>
+<img src="https://github.com/user-attachments/assets/3354197c-d002-4702-94f4-8fbb59afd5c8" alt="" width="600"/>
 
 Die Grafiken können direkt mit über die Schaltfläche „Export“
 gespeichert werden. Alternativ ist dies auch über Befehle wie png()
 möglich. Über die Pfeiltasten können vorher ausgeführt Grafiken erneut
 angeschaut werden.
 
-<img src="https://github.com/user-attachments/assets/98275cff-569f-4f21-ad94-dfb0a9c850ee" alt="" width="600"/>
+<img src="https://github.com/user-attachments/assets/3a5667ca-436c-4b79-a3c8-14d427cbe733" alt="" width="600"/>
 
 Pakete sind ein wichtiger Bestandteil in der Arbeit mit R. Pakete
 liefern vorgefertigte Funktionen und Befehle, welche wir für die Analyse
@@ -160,7 +159,7 @@ library(). Neben der Standardausrüstung die R bereit hält (z.B. Paket
 „ggplot2“ von hoher Relevanz. Ersteres vereinfacht die Programmierung,
 zweiteres ermöglicht komplexere grafische Ausgaben.
 
-<img src="https://github.com/user-attachments/assets/0d625f41-ce0a-4d9a-916d-c0b722a59dec" alt="" width="600"/>
+<img src="https://github.com/user-attachments/assets/e4259437-ae81-4e37-b72a-0871b865c01a" alt="" width="600"/>
 
 Die Hilfeseite ist sprichwörtlich dein bester Freund. Hier werden
 Struktur und theoretischer Hintergrund von Befehlen ausführlich
