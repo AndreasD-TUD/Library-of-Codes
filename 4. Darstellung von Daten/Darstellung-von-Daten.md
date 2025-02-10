@@ -11,6 +11,7 @@ Andreas Deim
   - [QQ-Plot](#qq-plot)
   - [Histogram](#histogram)
   - [Speichern von Grafiken](#speichern-von-grafiken)
+  - [R-Graph-Gallery](#r-graph-gallery)
 
 # Verwendete neue Befehle
 
@@ -539,3 +540,10 @@ die Breite und Höhe des Bildes `width = 1280, height = 720`
 und die größe des Textes `pointsize = 20`.
 
 Je nach größe des Bildes muss auch die Textgröße angepasst werden.
+
+## R-Graph-Gallery
+
+Auf der folgenden Website können noch viele weitere Möglichkeiten für
+die Erstellung einer Grafik gefunden werden:
+
+<https://r-graph-gallery.com/>
