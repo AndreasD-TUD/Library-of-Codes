@@ -1,0 +1,324 @@
+---
+title: "Deskriptive Statistiken"
+author: "Andreas Deim"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  github_document:
+    toc: true
+    toc_depth: 2
+---
+
+# Verwendete neue Befehle
+
+------------------------------------------------------------------------
+
+`function()` = Generierung einer eigenen Funktion\
+`recode()` = Variable umkodieren (dplyr)\
+`val_labels()` = haven-labels zuordnen (labelled)\
+`across()` = Einen Befehl an mehreren Variablen wiederholen (dplyr)\
+`write_spss()` = Datensatz als sav-Datei speichern\
+`frq()` = Häufigkeitstabelle ausgeben lassen (sjmisc)\
+`describe()` = Deskriptive Statistiken ausgeben lassen (psych)\
+`describeBy()` = Deskriptive Statistiken nach Gruppen sortiert ausgeben lassen (psych)\
+`summarise()` = Gleiche Befehl wie `summarize` (dplyr)\
+`length()` = Größe einer Variable ausgeben lassen\
+`sd()` = Standardabweichung ausgeben lassen\
+`var()` = Varianz ausgeben lassen\
+`median()` = Median ausgeben lassen\
+`table()` = Haüfigkeitstabelle ausgeben lassen\
+`quantile()` = Quantile oder Percentile ausgeben lassen\
+`min()` = Minimun einer Variable ausgeben lassen\
+`max()` = Maximum einer Variable ausgeben lassen\
+`range()` = Reichwerte (Minimum und Maximum) einer Variable ausgeben lassen
+
+------------------------------------------------------------------------
+
+# Pakete Laden
+
+Falls nicht Installiert, dann mit `install.pakages("...")`
+
+```{r, eval=FALSE}
+install.packages("sjmisc")
+install.packages ("sjPlot")
+install.packages("labelled")
+```
+
+```{r, message=FALSE, warning=FALSE}
+library(labelled)
+library(haven)
+library(dplyr)
+library(tidyr)
+library(psych)
+library(sjmisc)
+library(sjPlot)
+```
+
+# Datensatz laden
+
+Unseren Datensatz nennen wir der einfachheitshalber `data`.
+
+```{r}
+data<-read_spss(file = "ESS10.sav")
+```
+
+# Deskriptive Analyse
+
+## Exkurs: Human Values nach Schwartz
+
+Eine Besonderheit bei den Human Values ist, dass diese je nach Anwendung noch auf den individuellen Mittelwert zentriert werden müssen. Stellen wir uns vor, zwei Personen besitzen bei Universalismus den selben Wert von 3, allerdings gibt Person A bei allen anderen Human Values niedrigere Werte und Person B höhere Werte an.Somit steht Universalismus bei beiden Personen in einem anderen Kontext, auch wenn es den selben Wert besitzt. Mit der Zentrierung wollen wir die individuelle Priorsierung der Befragten berücksichtigen.
+
+Referenz: Schwartz, S. (2007). Value orientations: measurement, antecedents and consequences across nations. In *Measuring Attitudes Cross-Nationally* (pp. 169-203). SAGE Publications, Ltd, <https://doi.org/10.4135/9781849209458>
+
+Zuerst müssen wir alle 10 Werteausprägungen erster Ordnung errechnen und dann den Mittelwert aller Items von den Werteausprägungen abziehen. Anschließen fügen wir die Werte dem Datensatz hinzu.
+
+### Rekodierung der Human Values
+
+Doch zuvor müssen wir noch beachten, dass Human Values bei ihren Antwortvorgaben negativ gepolt sind. Dies bedeutet dass mit einer höheren Merkmalsausprägung der Wert sinkt.
+
+Die Rekodierung der Variablen kann aus verschieden Ursachen sinnvoll sein. Zum Beispiel kann es im Rahmen einer Analyse die Ergebnisinterpretation vereinfachen, wenn alle Werteausprägung in eine gleiche Richtung gepolt werden (Hohe nummerische Werte für hohe Merkmalsausprägung) oder die Wertauspärgungen um einen bestimmten numerischen Wert (zum Beispiel 0) zentriert werden.
+
+Für die Rekodierung nutzen wir das Paket *labelled* zur Unterstützung.\
+Im folgenden möchten wir alle Items zu Human Values umpolen und definieren mit den Befehl *`recode()`* welche Zahlen einer neuen Zahl zugeordnet werden sollen. Desweiteren müssen wir auch die Labels (verbale Merkmalsausprägung eines Items) an die nun veränderten Zahlenwerte anpassen.
+
+```{r, eval=FALSE}
+recode_human_values <- function(v) {
+  v <- v %>%
+    dplyr::recode(`1` = 6, `2` = 5, `3` = 4, `4` = 3, `5` = 2, `6` = 1)
+  val_labels(v) <- c("Very much like me" = 6, 
+                               "Like me" = 5, 
+                               "Somewhat like me" = 4, 
+                               "A little like me" = 3, 
+                               "Not like me"= 2, 
+                               "Not like me at all" = 1)
+  v
+}
+
+data <- data %>% 
+  mutate(across(c(ipcrtiv, imprich, ipeqopt, ipshabt, impsafe, impdiff, ipfrule, ipudrst, ipmodst, ipgdtim, impfree, iphlppl, ipsuces, ipstrgv, ipadvnt, ipbhprp, iprspot, iplylfr, impenv, imptrad, impfun), recode_human_values))
+```
+
+Mit dem Befehl *`function()`* generieren wir eine eigene Funktion mit dem Namen `recode_human_values()`. Dabei geben wir vor, dass der Funktion eine Variable, in unserem Fall genauer Datensatz, beigefügt werden muss.
+
+Der beigefügte Datensatz wird temporär als `v` gespeichert und im weiteren Verlauf so mit der Funktion `recode()` und *`val_labels()`* überarbeitet, dass die Human Values umgepolt werden.
+
+In der Funktion `recode()` geben wir zuerst den Wert an, welcher geändert und danach durch welchen er ersetzt werden soll `` `1` = 6 ``. Vor dem Befehl `recode()` setzen wir noch `dplyr::` da wir den Befehl direkt aus dem *dplyr* Paket verwenden wollen. Dieser Zusatz empfiehlt sich, wenn ein Befehl in mehreren Paketen vorkommt.
+
+Mit `val_labels()` geben wir an, welchem Wert wir welche verbale Ausprägung zuordnen wollen. Die neue Zuordnung muss bei einem von haven eingeladenen Datensatz beachtet werden.
+
+Abschließend verbinden wir die Befehl `mutate()`, `across()`, und `recode_human_values()`. Mit `across()` können wir einen Befehl an mehreren Variablen ausführen. `mutate()` sorgt dafür dass wir die umgepolten Variablen überschreiben.
+
+### Rekodierung weiterer Variablen
+
+Mit folgenden Befehl können noch weitere Variablen umgepolt werden, die für die weitere Analyse wichtig sind. Mit *`frq()`* können wir uns die Werteausprägungen, sowie Häufigkeiten nochmal anschauen. Dieser Befehl wird später noch genauer erklärt.
+
+```{r}
+#Beispiel freehms
+data %>% select(freehms) %>% frq()
+
+data <- data %>%
+  mutate(freehms = recode(freehms, '1' = 5, '2' = 4, '3' = 3, '4' = 2, '5' = 1)) %>%
+  set_value_labels(freehms = c("Agree strongly" = 5, 
+                               "Agree" = 4, 
+                               "Neither agree nor disagree" = 3, 
+                               "Disagree"= 2, 
+                               "Disagree strongly" = 1))
+
+data %>% select(freehms) %>% frq()
+```
+
+### Berechnung der Human Values
+
+**Achtung:** Die folgenden Berechnungen können viel Zeit in Anspruch nehmen. Nach der Berechnung kann es sich lohnen den überarbeiteten Datensatz abzuspeichern, um folgende Berechnung nicht immer wieder zu wiederholen. Dies machen wir mit den Befehl *`write_spss()`*.
+
+```{r, eval=FALSE}
+# Erste Schritt Berechnung des gesamten Mittelwerts den wir dann abziehen wollen
+
+data <- data %>%
+  rowwise() %>%
+  mutate(hv_mean = mean(c(ipcrtiv, imprich, ipeqopt, ipshabt, impsafe, impdiff, ipfrule, ipudrst, ipmodst, ipgdtim, impfree, iphlppl, ipsuces, ipstrgv, ipadvnt, ipbhprp, iprspot, iplylfr, impenv, imptrad, impfun), na.rm = T))
+
+#Zweiter Schritt Entwicklung der Wertauspärgung 1. Ordnung
+
+#1. Self-Direction
+data <- data %>%
+  rowwise() %>%
+  mutate(hv_selfd = mean(c(ipcrtiv, impfree), na.rm = T) - hv_mean)
+
+#2. Power
+data <- data %>%
+  rowwise() %>%
+  mutate(hv_power = mean(c(imprich, iprspot), na.rm = T) - hv_mean)
+
+#3. Universalism
+data <- data %>%
+  rowwise() %>%
+  mutate(hv_univ = mean(c(ipeqopt, ipudrst, impenv), na.rm = T) - hv_mean)
+
+#4. Achievement
+data <- data %>%
+  rowwise() %>%
+  mutate(hv_achiev = mean(c(ipshabt, ipsuces), na.rm = T) - hv_mean)
+
+#5. Security
+data <- data %>%
+  rowwise() %>%
+  mutate(hv_secur = mean(c(impsafe, ipstrgv), na.rm = T) - hv_mean)
+
+#6. Stimulation
+data <- data %>%
+  rowwise() %>%
+  mutate(hv_stim = mean(c(impdiff, ipadvnt), na.rm = T) - hv_mean)
+
+#7. Conformity
+data <- data %>%
+  rowwise() %>%
+  mutate(hv_conf = mean(c(ipfrule, ipbhprp), na.rm = T) - hv_mean)
+
+#8. Tradition
+data <- data %>%
+  rowwise() %>%
+  mutate(hv_trad = mean(c(ipmodst, imptrad), na.rm = T) - hv_mean)
+
+#9. Hedonism
+data <- data %>%
+  rowwise() %>%
+  mutate(hv_hedon = mean(c(ipgdtim, impfun), na.rm = T) - hv_mean)
+
+#10. Benevolence
+data <- data %>%
+  rowwise() %>%
+  mutate(hv_benev = mean(c(iphlppl, iplylfr), na.rm = T) - hv_mean)
+
+write_spss(data, "ESS10_HV.sav")
+
+```
+
+Damit können nun die Werteausprägungen für die weitere Berechnung verwendet werden.
+
+## Häufigkeiten
+
+Einen ersten schönen Überblick erhalten wir mit dem *sjmisc*-Paket. Der Befehl `frq()` gibt uns zuerst die Häufigkeiten aus der einzelnen Wertausprägungen aus.
+
+Mit der Option `frq(..., out = "viewer")` geben wir an, dass wir die Ergebnisse in einer Tabelle im Fenster viewer (unten rechts) ausgegeben haben wollen.
+
+```{r}
+
+frq(data$wrclmch, out = "viewer")
+
+```
+
+In der Tabelle werden Spaltenweise von links nach rechts der numerische Wert der Wertausprägung, die Bezeichnung der Wertausprägung, die absolute Häufigkeit (Anzahl der Häufigkeit), die relative Häufigkeit (NA berücksichtig), die relative Häufigkeit (NA vernachlässigt) und die kumulierte relative Häufigkeit (NA vernachlässigt) dargestellt.
+
+Unterhalb der Tabelle werden zudem die gesamte Anzahl der befragten Personen (mit und ohne Berücksichtigung der NA), der Mittelwert und die Standardabweichung angezeigt.
+
+Wenn wir nun die Werte nach bestimmten Gruppen oder Ländern ausgegeben benötigen, so können wir uns wieder dem `filter()` Befehl aus *dplyr* bemächtigen.
+
+```{r}
+data %>%
+  filter(cntry == "GB") %>%
+  frq(wrclmch, out = "viewer")
+
+#oder
+
+data %>%
+  filter(gndr == 2) %>%
+  frq(wrclmch, out = "viewer")
+```
+
+## Mittelwert, Standardabweichung und mehr
+
+Nachdem wir uns die Häufigkeiten angeschaut haben, möchten wir uns nun die weiteren deskriptiven Statistiken anschauen. Dafür verwenden wir den Befehl `describe()` des *psych*-Paketes
+
+```{r}
+
+describe(data$wrclmch, na.rm = T)
+```
+
+Wir erhalten von links nach rechts:
+
+`vars` = Itemnummer\
+`n` = Anzahl gültiger Werte\
+`mean` = Mittelwert\
+`sd` = Standardabweichung\
+`median` = Median\
+`trimmed` = getrimmter Mittelwert (Grenze bei 0.1)\
+`mad` = mittlere absolute Abweichung vom Median\
+`min` = Minimum\
+`max` = Maximum\
+`skew` = Schiefe der Verteilung\
+`kurtosis` = Kurtosis (Wölbung der Verteilung)\
+`se` =Standardfehler der Verteilung
+
+Wenn wir nach Gruppen eine Analyse haben möchten so können wir entweder mit `select()` oder mit `describeBy()` arbeiten.
+
+```{r}
+describeBy(data$wrclmch, data$cntry, mat = T, na.rm = T)
+```
+
+Mit dem Befehl `describe.by(data$wrclmch, data$cntry, mat = T, na.rm = T)` lassen wir uns alle deskriptiven Statistiken zu jedem Land separat ausgeben. Dabei geben wir zuerst die Variable an, die berechnet und dann die Variable, nach der gruppiert werden soll. Mit `mat = T` geben wir an, dass wir das Ergebnis in einer tabellarischen Form ausgegeben haben wollen.
+
+```{r}
+data %>%
+  filter(cntry %in% c("GB", "BE", "IT")) %>%
+  group_by(cntry) %>%
+  summarise(describe(wrclmch, na.rm = T))
+```
+
+## Alternative Einzelberechnungen
+
+Wollen wir die deskriptiven Statistiken einzeln Berechnen, so können wir folgende Befehle verwenden:
+
+**Anzahl**
+
+```{r}
+data %>% ungroup() %>% summarize(length(wrclmch))
+
+```
+
+**Mittelwert**
+
+```{r}
+data %>% ungroup() %>% summarize(mean(wrclmch, na.rm = T))
+```
+
+**Standardabweichung**
+
+```{r}
+data %>% ungroup() %>% summarize(sd(wrclmch, na.rm = T))
+```
+
+**Varianz**
+
+```{r}
+data %>% ungroup() %>% summarize(var(wrclmch, na.rm = T))
+```
+
+**Median**
+
+```{r}
+data %>% ungroup() %>% summarize(median(wrclmch, na.rm = T))
+```
+
+**Häufigkeitstabelle**
+
+```{r}
+data %>% select(wrclmch) %>% table(., useNA = "ifany")
+```
+
+**Quantile und Percentile**
+
+```{r}
+data %>% ungroup() %>% summarize(quantile(wrclmch,probs = seq(0.25, 1, 0.25), na.rm = T)) #Beginn bei 25%
+
+data %>% ungroup() %>% summarize(quantile(wrclmch,probs = seq(0.1, 1, 0.1), na.rm = T)) #Beginn bei 10%
+```
+
+**Min, Max und Range**
+
+```{r}
+data %>% ungroup() %>% summarize(min(wrclmch, na.rm = T))
+
+data %>% ungroup() %>% summarize(max(wrclmch, na.rm = T))
+
+data %>% ungroup() %>% summarize(range(wrclmch, na.rm = T))
+```
