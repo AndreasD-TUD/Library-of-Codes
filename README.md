@@ -13,12 +13,14 @@ Das Repository ist in verschiedene Ordner unterteilt, die jeweils einem spezifis
   - Grundlagen der Syntax
   - Variablen und Datentypen
 
-- **02_Daten einlesen und Tidy**
+- **02_Daten einlesen und Tidyverse**
   - Datensätze einlesen
   - NA-Werte setzen
   - Einführung in dplyr
 
 - **03_Deskriptive Statistiken**
+  - Human Values des ESS
+  - Rekodierung
   - Häufigkeiten berechnen
   - Mittelwert, Standardabweichung und mehr in einem Befehl
   - Einzelberechnung
