@@ -14,7 +14,7 @@ Andreas Deim
   - [Pakete installieren und laden](#pakete-installieren-und-laden)
   - [Youtube-Empfehlung](#youtube-empfehlung)
 
-# Verwendete Befehle
+# Verwendete neue Befehle
 
 ------------------------------------------------------------------------
 
