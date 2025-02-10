@@ -17,7 +17,7 @@ Andreas Deim
   - [Beispielhafte Anwendung von Tidyverse (Beispiel
     2)](#beispielhafte-anwendung-von-tidyverse-beispiel-2)
 
-# Verwendete Befehle
+# Verwendete neue Befehle
 
 ------------------------------------------------------------------------
 
