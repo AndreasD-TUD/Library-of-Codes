@@ -129,7 +129,9 @@ setwd("Dateipfad")
 getwd()
 ```
 
-Im zweiten Schritt lesen wir dann den Datensatz ein.
+Im zweiten Schritt lesen wir dann den Datensatz ein. Wichtig ist, dass
+die richtige Bezeichnung der Datei bei `read...(file = "...")` angegeben
+wird.
 
 ``` r
 data1<-read_spss(file = "ESS11.sav") #haven
