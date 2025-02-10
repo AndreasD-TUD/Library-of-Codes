@@ -4,9 +4,13 @@ Andreas Deim
 10 Februar, 2025
 
 - [Verwendete neue Befehle](#verwendete-neue-befehle)
-- [](#section)
-  - [Pakete Laden](#pakete-laden)
-  - [Grafische Darsrellung](#grafische-darsrellung)
+- [Pakete Laden](#pakete-laden)
+- [Grafische Darsrellung](#grafische-darsrellung)
+  - [Boxplot](#boxplot)
+  - [Ausblick ggplot2:](#ausblick-ggplot2)
+  - [QQ-Plot](#qq-plot)
+  - [Histogram](#histogram)
+  - [Speichern von Grafiken](#speichern-von-grafiken)
 
 # Verwendete neue Befehle
 
@@ -33,9 +37,7 @@ speichern
 
 ------------------------------------------------------------------------
 
-# 
-
-## Pakete Laden
+# Pakete Laden
 
 ``` r
 library(haven)
@@ -52,9 +54,9 @@ Datensatz einlesen (Wenn nötig)
 data <- read_sav("ESS10_HV.sav") 
 ```
 
-## Grafische Darsrellung
+# Grafische Darsrellung
 
-### Boxplot
+## Boxplot
 
 Ein **Boxplot** (oder Box-and-Whisker-Plot) zeigt auf einen Blick
 zentrale Tendenzen und Streuungen von Daten. Die wichtigsten Elemente
@@ -131,7 +133,7 @@ data %>%
 Es gibt bei der Darstellung vielfältige Möglichkeiten, welche alle unter
 der Hilfeseite `?boxplot()` eingesehen werden können.
 
-**Ausblick ggplot2:**
+## Ausblick ggplot2:
 
 Desweiteren kann man auch komplexere Grafiken mit *ggplot2* erstellen,
 welche in manchen Fällen etwas mehr Vorarbeit erfordert.
@@ -245,7 +247,7 @@ data %>%
 
 ![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
 
-### QQ-Plot
+## QQ-Plot
 
 Das **QQ-Plot (Quantile-Quantile-Plot)** verwenden wir, um zu
 überprüfen, ob eine Menge von Daten einer bestimmten theoretischen
@@ -347,7 +349,7 @@ data %>%
 
 Alle Grafiken können wie bei den Boxplots grafisch angepasst werden.
 
-### Histogram
+## Histogram
 
 Das Histogramm gibt und einen schönen Überblick über die Verteilung.
 Auch hier werden wieder verschiedene Möglichkeiten aufgezeigt.
@@ -479,7 +481,7 @@ data %>%
 
 ![](Darstellung-von-Daten_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
-### Speichern von Grafiken
+## Speichern von Grafiken
 
 Das Speichern von Grafiken erfolgt über verschiedene Möglichkeiten. Am
 einfachsten ist die Verwendung des Befehles `png()` (andere Dateiformate
