@@ -1,12 +1,38 @@
 ---
 title: "Darstellung von Daten"
 author: "Andreas Deim"
-date: "2024-12-01"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   github_document:
     toc: true
     toc_depth: 2
 ---
+
+# Verwendete neue Befehle
+
+------------------------------------------------------------------------
+
+`boxplot()` = Boxplot generieren\
+`rename()` = Variable umbenennen (dplyr)\
+`ggplot()` = Eine Grafik mit ggplot2 erzeugen (ggplot2)\
+`aes()` = Grafische Parameter festlegen (ggplot2)\
+`geom_boxplot()` = Boxplot generieren (ggplot2)\
+`geom_violine()` = Violinplot generieren (ggplot2)\
+`facet_wrap()` = Mehrere Plots nach Gruppen ausgeben lassen (ggplot2)\
+`deframe()` = Datenformat von dplyr auflösen (tibble)\
+`qqnorm()` = QQPlot ausgeben lassen\
+`qqline()` = Linie im QQPlot hinzufügen\
+`qqPlot()` = QQPlot mit Linie ausgeben lassen (großes "P", car)\
+`geom_qq()` = QQPlot ausgeben lassen (ggplot2)\
+`geom_qq_line()` = inie im QQPlot hinzufügen (ggplot2)\
+`hist()` = Histogram generieren\
+`geom_histogram()` = Histogram generieren (ggplot2)\
+`png()` = Speichern von Grafiken im png-Format\
+`dev.off()` = `png()` Befehl schließen und die generierte Grafik speichern
+
+------------------------------------------------------------------------
+
+# 
 
 ## Pakete Laden
 
@@ -22,7 +48,7 @@ library(tibble)
 Datensatz einlesen (Wenn nötig)
 
 ```{r}
-data <- read_sav("ESS11_HV.sav") 
+data <- read_sav("ESS10_HV.sav") 
 ```
 
 ## Grafische Darsrellung
@@ -144,6 +170,21 @@ data %>%
 ```
 
 Auch hier können vielfältige grafische Anpassungen vorgenommen werden, auf die allerdings nicht weiter eingegangen wird.
+
+```{r}
+data %>%
+  filter(cntry %in% c("BE", "GB")) %>%
+  filter(!is.na(domicil)) %>%
+  ggplot(., aes(x=as.factor(domicil), y=hv_trad, fill=cntry)) + 
+    geom_boxplot()
+
+data %>%
+  filter(cntry %in% c("BE", "GB")) %>%
+  filter(!is.na(domicil)) %>%
+  ggplot(., aes(x=as.factor(domicil), y=hv_trad, fill=cntry)) + 
+    geom_boxplot() +
+    facet_wrap(~cntry)
+```
 
 ### QQ-Plot
 
