@@ -1,7 +1,7 @@
 Einführung in R
 ================
 Andreas Deim
-2024-12-01
+10 Februar, 2025
 
 - [Download und Einrichtung von R, R-Studio](#download-und-einrichtung-von-r-r-studio)
   - [Unterstützung für macOS](#unterstützung-für-macos)
@@ -154,7 +154,7 @@ liefern vorgefertigte Funktionen und Befehle, welche wir für die Analyse
 von Daten benötigen. In diesem Fenster können Pakete aktiviert oder auch
 deaktiviert werden. Dies ist nötig, um auf die Befehle in den Paketen
 zuzugreifen. Alternativ geschieht das geläufig durch den Befehl
-library(). Neben der Standardausrüstung die R bereit hält (z.B. Paket
+*`library()`*. Neben der Standardausrüstung die R bereit hält (z.B. Paket
 „base“) sind auch zusätzliche Pakete aus der Community wie „dplyr“ und
 „ggplot2“ von hoher Relevanz. Ersteres vereinfacht die Programmierung,
 zweiteres ermöglicht komplexere grafische Ausgaben.
