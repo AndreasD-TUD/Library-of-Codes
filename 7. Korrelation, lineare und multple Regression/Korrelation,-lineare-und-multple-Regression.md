@@ -171,7 +171,7 @@ data %>%
   plot()
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![download](https://github.com/user-attachments/assets/8ae79e13-c791-4284-93f1-893792e09e49)
 
 ``` r
 data %>%
@@ -180,7 +180,7 @@ data %>%
   plot()
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
+![download](https://github.com/user-attachments/assets/6060803a-0b4f-48ce-8a0d-0416ad1bf917)
 
 ``` r
 data %>%
@@ -189,7 +189,8 @@ data %>%
   plot()
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-5-3.png)<!-- -->
+![download](https://github.com/user-attachments/assets/085a5b6a-d0ba-4f2c-9a64-37f466b60ac6)
+
 
 Wie wir sehen, können wir zwischen den Werten `hv_power` und `hv_univ`
 andeutungsweise einen negativen Zusammenhang vermuten. Zwischen den
@@ -208,7 +209,7 @@ data %>%
   plot(, cex=log(xyTable(.)$number))
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![download](https://github.com/user-attachments/assets/02097d81-aa46-45ec-be86-7249f2a8fd2b)
 
 ``` r
 data %>%
@@ -218,7 +219,7 @@ data %>%
   geom_boxplot()
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
+![download](https://github.com/user-attachments/assets/9df9cbd9-88c4-4153-a084-37d67e2a430c)
 
 ``` r
 data %>%
@@ -229,7 +230,7 @@ data %>%
   facet_wrap(~cntry)
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->
+![download](https://github.com/user-attachments/assets/06cf20d2-5f4b-4cb9-91e2-372dcdff8f80)
 
 ``` r
 data %>%
@@ -239,7 +240,7 @@ data %>%
   geom_violin()
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-6-4.png)<!-- -->
+![download](https://github.com/user-attachments/assets/8f45fa1c-c15a-4fd3-8fa5-584562f87a23)
 
 # Korrelation
 
@@ -980,7 +981,7 @@ model <- data %>%
 ggPredict(model, show.point = FALSE, modx.values = seq(1,7,1), colorn = 7)
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![download](https://github.com/user-attachments/assets/a143cd83-08c2-4f72-8ca2-0660486bad90)
 
 ``` r
 model <- data %>%   
@@ -991,7 +992,7 @@ model <- data %>%
 ggPredict(model, show.point = FALSE, modx.values = seq(1,7,1))
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-16-2.png)<!-- -->
+![download](https://github.com/user-attachments/assets/62934d31-048f-4940-a619-08777cd1826f)
 
 ``` r
 model <- data %>%   
@@ -1002,7 +1003,7 @@ model <- data %>%
 ggPredict(model, show.point = FALSE, modx.values = seq(1,10,1))
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-16-3.png)<!-- -->
+![download](https://github.com/user-attachments/assets/62d280eb-56ad-4b4b-a4d1-ffb65ef6551f)
 
 ## Überprüfung der Vorraussetzung
 
@@ -1037,7 +1038,7 @@ data %>%
   geom_boxplot()
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![download](https://github.com/user-attachments/assets/76a6d2d8-d491-426d-bd55-1f7ac22fc13f)
 
 Alternativ kann man hier auch auf den Rainbow Test zurückgreifen:
 
@@ -1062,10 +1063,13 @@ Für diese Überprüfung verwenden wir einfach den Befehl `plot()`.
 plot(model)
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-20-2.png)<!-- -->![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-20-3.png)<!-- -->![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-20-4.png)<!-- -->
+![download](https://github.com/user-attachments/assets/e4bb75ba-fbea-473b-9303-f71fc913cf68)
+![download](https://github.com/user-attachments/assets/7edf641c-d416-4000-a2d8-2456def6471b)
+![download](https://github.com/user-attachments/assets/454b5d1f-3cf8-4f29-9d11-3d806bf1417e)
+![download](https://github.com/user-attachments/assets/3b03596c-5175-43be-80b3-302e9e02de35)
 
 ``` r
 hist(model$residuals, breaks = seq(round(min(model$residuals), digits = 0)-0.5, round(max(model$residuals), digits = 0)+0.5, 1))
 ```
 
-![](Korrelation,-lineare-und-multple-Regression_files/figure-gfm/unnamed-chunk-20-5.png)<!-- -->
+![download](https://github.com/user-attachments/assets/e9c4d041-3fe4-4dd5-8cc1-1f2907b1b325)
