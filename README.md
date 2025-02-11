@@ -38,7 +38,7 @@ Das Repository ist in verschiedene Ordner unterteilt, die jeweils einem spezifis
 - **06_Gewichten in R**
   - Gewichten
 
-- **Korrelation, lineare und multiple Regression**
+- **07_Korrelation, lineare und multiple Regression**
   - Kovarianz
   - Scatterplot
   - Korrelation
