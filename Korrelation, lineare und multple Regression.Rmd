@@ -1,0 +1,610 @@
+---
+title: "Korrelation, lineare und multiple Regression"
+author: "Andreas Deim"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  github_document:
+    toc: true
+    toc_depth: 2
+---
+
+# Verwendete neue Befehle
+
+------------------------------------------------------------------------
+
+`cov()` = Kovarianz berechnen\
+`plot()` = Punktewolke, QQPlot, ... generieren. Abhängig von Input\
+`cor()` = Korrelation berechnen\
+`lm()` = lineares Regressionsmodel erstellen\
+`sumary()` = Regressionsmodel zusammenfassen\
+`lm.beta()` = Beta-Koeffizienten eines Modells berechnen (lm.beta)\
+`scale()` = Variable standardisieren und/oder zentrieren\
+`ggPredict()` = Regressionsmodell ploten (predict3d)\
+`vif()` = VIF berechnen (car)\
+`raintest()` = Rainbowtest durchführen (lmtest)
+
+------------------------------------------------------------------------
+
+# Pakete installieren
+
+```{r, eval = FALSE}
+install.packages("predict3d")
+install.packages("labelled")
+install.packages("lmtest")
+install.packages("lm.beta")
+```
+
+# Pakete Laden
+
+```{r, message=FALSE}
+library(haven) 
+library(ggplot2)
+library(dplyr)
+library(lm.beta)
+library(predict3d)
+library(car)
+library(labelled)
+library(lmtest)
+library(sjmisc)
+library(sjPlot)
+```
+
+Datensatz einlesen (Wenn nötig)
+
+```{r}
+data <- read_sav("ESS10_HV.sav") 
+```
+
+# Kovarianz
+
+Die **Kovarianz** ist ein Maß, das beschreibt, wie zwei Variablen zusammenhängen. Sie zeigt, ob und wie stark die Abweichungen einer Variable von ihrem Mittelwert mit den Abweichungen einer anderen Variable von ihrem Mittelwert korrelieren.
+
+**Definition\
+**Die Kovarianz wird berechnet als der Durchschnitt der Produkte der Abweichungen zweier Variablen von ihren Mittelwerten. Mathematisch ausgedrückt:
+
+$$
+\text{Cov}(X, Y) = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{n}
+$$
+
+-   $X$, $Y$: Zwei Variablen\
+-   $x_i$, $y_i$: Werte der Variablen\
+-   $\bar{x}$, $\bar{y}$: Mittelwerte der Variablen\
+-   $n$: Anzahl der Datenpunkte
+
+**Interpretation**
+
+-   **Positive Kovarianz**: Wenn eine Variable steigt, steigt die andere auch (direkter Zusammenhang).
+
+-   **Negative Kovarianz**: Wenn eine Variable steigt, sinkt die andere (inverser Zusammenhang).
+
+-   **Nahe null**: Es besteht kein linearer Zusammenhang zwischen den Variablen.
+
+**Beachte**
+
+Die Kovarianz ist **unskaliert**, d.h., ihre Werte hängen von den Einheiten der Variablen ab. Damit zeigt sie nur die Richtung der Beziehung, aber nicht deren Stärke.
+
+Im folgenden ein Beispiel zur Berechnung der Kovarianz mit dem Befehl `cov()`:
+
+```{r}
+data %>%
+  filter(cntry == "GB") %>%
+  select(hv_power, lrscale) %>%
+  cov(., use = "pairwise.complete.obs")
+  
+
+data %>%
+  filter(cntry == "SI") %>%
+  select(hv_power, lrscale, trstprl, psppsgva, freehms) %>%
+  cov(., use = "pairwise.complete.obs")
+```
+
+Für die Berechnung der Kovarianz können wir fast vollständig auf die bekannte Struktur mit *dplyr* zurückgreifen. Dabei haben wir die Möglichkeit mehrere Variablen gleichzeitig zu betrachten, allerdings immer nur für ein Land.
+
+Mit der Option `cov(..., use = "pairwise.complete.obs")` geben wir an, dass wir nur Paare in die Berechnung einbeziehen wollen, in denen kein `NA` vorkommt. Alternativ können wir an der Stelle `"everythink"`, `"all.obs"`, `"complete.obs"` oder `"na.or.complete"`.
+
+Im Ergebnis erhalten wir eine an der Diagonale gespiegelte Matrix. Dabei reicht es aus wenn wir die obere rechte Hälfte oder untere linke Hälfte betrachten. Auf der Diagonale wurde die Kovarianz der Variable mit sich selbst berechnet. Aus dem Ergebnis können wir beispielsweise sehen, dass `hv_power` und `lrscale` negativ in Großbritanien zusammenhängen. Das bedeutet, dass bei einem geringeren `lrscale`-Wert (links) ein höherer `hv_power`-Wert erwartet wird.
+
+# Scatterplot (Punktwolke)
+
+Um sich einen ersten Eindruck über die Beziehung zweier Variablen zu verschaffen, kann es helfen sich diese Beziehung grafisch ausgeben zu lassen.
+
+```{r}
+data %>%
+  filter(cntry == "GB") %>%
+  select(lrscale, freehms) %>%
+  plot()
+
+data %>%
+  filter(cntry == "GB") %>%
+  select(lrscale, hv_power) %>%
+  plot()
+
+data %>%
+  filter(cntry == "GB") %>%
+  select(hv_power, hv_univ) %>%
+  plot()
+```
+
+Wie wir sehen, können wir zwischen den Werten `hv_power` und `hv_univ` andeutungsweise einen negativen Zusammenhang vermuten. Zwischen den Variablen `hv_power` und `lrscale`, sowie zwischen `lrscale` und `freehms` ist dies schon schwieriger zu beurteilen. Um auch diese für diskrete Variablen interpretierbar zu machen müssen wir die Grafik anpassen.
+
+Im folgenden werden verschiedene Möglichkeiten gezeigt:
+
+```{r}
+data %>%
+  filter(cntry == "GB") %>%
+  filter(!is.na(lrscale) & !is.na(freehms)) %>%
+  select(lrscale, freehms) %>%
+  plot(, cex=log(xyTable(.)$number))
+
+
+data %>%
+  filter(cntry == "GB") %>%
+  filter(!is.na(lrscale) & !is.na(freehms)) %>%
+  ggplot(., aes(x=as.factor(lrscale), y=freehms)) + 
+  geom_boxplot()
+
+data %>%
+  filter(cntry %in% c("GB", "BG", "CZ", "SI", "HU", "FR")) %>%
+  filter(!is.na(lrscale) & !is.na(freehms)) %>%
+  ggplot(., aes(x=as.factor(lrscale), y=freehms, fill=cntry)) + 
+  geom_boxplot() +
+  facet_wrap(~cntry)
+
+data %>%
+  filter(cntry %in% c("BG")) %>%
+  filter(!is.na(lrscale) & !is.na(freehms)) %>%
+  ggplot(., aes(x=as.factor(lrscale), y=freehms, fill = cntry)) + 
+  geom_violin()
+
+
+```
+
+# Korrelation
+
+Da die Kovarianz allein schwer interpretierbar ist, da unskaliert. Um sie zu normieren, wird die **Korrelation** verwendet, die als dimensionslose Version der Kovarianz gilt:
+
+## 1. Pearson-Kovarianz (Lineare Korrelation)
+
+-   **Definition**: Misst den Grad des **linearen Zusammenhangs** zwischen zwei Variablen.
+
+-   **Mathematische Grundlage**:
+
+-   Berechnet die Kovarianz der Variablen, normiert durch deren Standardabweichungen.
+
+$$r = \frac{\text{Cov}(X, Y)}{\sigma_X \cdot \sigma_Y}$$
+
+Dabei sind:
+
+$\sigma_X$: Standardabweichung von (X)\
+$\sigma_Y$: Standardabweichung von (Y)
+
+-   **Voraussetzungen**:
+
+    -   Die Beziehung zwischen den Variablen muss linear sein.
+
+    -   Die Daten sollten metrisch und normalverteilt sein.
+
+-   **Empfindlichkeit**:
+
+    -   Stark empfindlich gegenüber Ausreißern, da diese den Mittelwert und die Standardabweichung beeinflussen.
+
+```{r}
+data %>%
+  filter(cntry == "GB") %>%
+  select(hv_power, hv_univ, lrscale, freehms) %>%
+  cor(., use = "pairwise.complete.obs", method = "pearson")
+```
+
+## 2. Kendall's Tau (Rangkorrelation)
+
+-   **Definition**: Misst die **monotone Beziehung** zwischen zwei Variablen anhand von Rangpaaren
+
+    -   Monoton = das Vorliegen einer "je mehr desto mehr"- bzw. einer "je mehr desto weniger"- Beziehung
+
+-   **Mathematische Grundlage**:
+
+    -   Betrachtet Paare von Beobachtungen $(x_i, y_i)$ und $(x_j, y_j)$:
+
+        -   **Konkordante Paare**: Wenn $x_i$ \> $x_j$ und $y_i$ \> $y_j$ (oder $x_i$ \< $x_j$ und $y_i$ \< $y_j$).
+
+        -   **Diskordante Paare**: Wenn $x_i$ \> $x_j$ und $y_i$ \< $y_j$ (oder umgekehrt).
+
+$$τ = \frac{\text{Anzahl konkordanter Paare} - \text{Anzahl diskordanter Paare}}{\binom{n}{2}}$$
+
+-   **Voraussetzungen**:
+
+    -   Keine spezifischen Annahmen über Verteilung oder Linearität.
+
+-   **Empfindlichkeit**:
+
+    -   Robuster gegenüber Ausreißern und nichtlinearer Datenstruktur als Pearson.
+
+    -   Besser für kleinere Datensätze geeignet.
+
+```{r}
+data %>%
+  filter(cntry == "SI") %>%
+  select(hv_power, hv_univ, lrscale, freehms) %>%
+  cor(., use = "pairwise.complete.obs", method = "kendall")
+```
+
+## 3. Spearman's Rho (Rangkorrelation)
+
+-   **Definition**: Misst die Stärke und Richtung eines **monotonen Zusammenhangs** durch Ränge.
+
+-   **Mathematische Grundlage**:
+
+    -   Zunächst werden die Daten in Ränge umgewandelt.
+
+    -   Pearson-Korrelation wird auf der Basis Rangdaten berechnet:
+
+    $$r_s = 1 - \frac{6 \sum (R_i-S_i)^2}{n(n^2 - 1)}$$
+
+    (Vereinfachte Formel unter der Annahme weniger Bedingungen)
+
+    -   $R_i$: Rang von $x_i$.
+
+    -   $S_i$: Rang on $y_i$
+
+    -   $n$: Anzahl der Beobachtungen.
+
+-   **Voraussetzungen**:
+
+    -   Keine Normalverteilung erforderlich.
+
+    -   Misst monotone, nicht unbedingt lineare Beziehungen.
+
+-   **Empfindlichkeit**:
+
+    -   Weniger anfällig für Ausreißer als Pearson.
+
+    -   Kann monotone, aber nicht-lineare Zusammenhänge besser erkennen als Pearson.
+
+```{r}
+data %>%
+  filter(cntry == "SI") %>%
+  select(hv_power, hv_univ, lrscale, freehms, eisced) %>%
+  cor(., use = "pairwise.complete.obs", method = "spearman")
+```
+
+## Zusammenfassung der Unterschiede
+
+| Merkmal | **Pearson** | **Kendall** | **Spearman** |
+|------------------|------------------|------------------|------------------|
+| **Typ der Beziehung** | Linear | Monoton | Monoton |
+| **Datenanforderung** | Metrisch, normalverteilt | Beliebige Verteilung, ordinal/metrisch | Beliebige Verteilung, ordinal/metrisch |
+| **Empfindlichkeit** | Empfindlich gegenüber Ausreißern | Robust gegenüber Ausreißern | Weniger empfindlich als Pearson |
+| **Skalierung** | Rohdaten | Ränge | Ränge |
+| **Geeignet für** | Lineare Beziehungen | Kleine Datensätze, monotone Trends | Monotone Trends, große Datensätze |
+
+Jeder Koeffizient hat seinen spezifischen Anwendungsbereich, je nach Struktur und Eigenschaften der Daten.
+
+# Lineare Regression
+
+Um eine lineare Regression durchzuführen und die Ergebnisse interpretieren zu können, müssen wir uns zu Beginn ein lineares Model mit dem Befehl `lm()` entwickeln. Dies erfolgt mit einer ganz bestimmten Schreibweise, welche unter `?formula` genauer betrachtet werden kann.
+
+Zu Beginn definieren wir dabei erstmal wer von wem abhängt. Dies erfolgt mit dem `~`-Zeichen. Zuerst wird die abhängige Variable und dann die unabhängige(n) Variable(n) definiert. Im folgenden Beispiel mit `hv_power ~ hv_univ`.\
+Mit dem `summary`-Befehl lassen wir uns die Modelergebnisse ausgeben.
+
+Mit der Option `lm(..., weights = ...)` setzen wir wieder den Gewichtungsfaktor, der bei der Analyse berücksichtigt werden soll.
+
+Abschließend lassen wir uns noch die standardisierten Beta-Koeffizienten mit dem Befehl `lm.beta()` des gleichnamigen *lm.beta*-Paketes ausgeben ausgeben, mit welchen wir die Skaleneffekte reduzieren. Die Skaleneffekte beschreiben die unterschiedliche Ausprägung eines Items, bedingt durch unterschiedlich viele Antwortmöglichkeiten und ebenso verschiedener Verteilungsfunktionen der Variablen. Mit dem Beta-Koeffizienten können wir die Regressionsparameter miteinander vergleichen.
+
+```{r}
+model <- data %>%
+  filter(cntry == "GB") %>%
+  lm(hv_power ~ hv_univ, data= ., weights = anweight)
+
+summary(model)
+lm.beta(model)
+```
+
+## Interpretation
+
+### 1. Call
+
+`Call: lm(formula = hv_power ~ hv_univ, data = ., weights = anweight)`
+
+-   Zeigt die Formel, die für das Modell verwendet wurde:
+
+    -   **`hv_power ~ hv_univ`**: `hv_power` ist die abhängige Variable, `hv_univ` ist die unabhängige Variable.
+
+    -   **`weights = anweight`**: Das Modell wurde mit Gewichtungen (`anweight`) angepasst, wodurch einige Datenpunkte mehr Gewicht erhalten.
+
+### 2. Gewichtete Residuen
+
+`Weighted Residuals:`
+
+-   Beschreibt die Verteilung der **gewichteten Residuen**:
+
+    -   Residuen sind die Differenzen zwischen den tatsächlichen Werten der abhängigen Variable (`hv_power`) und den vorhergesagten Werten des Modells.
+
+    -   Die Statistik zeigt:
+
+        -   **Min**: Kleinster Residualwert (-7.9245).
+
+        -   **1Q, Median, 3Q**: Quartile der Residuen.
+
+        -   **Max**: Größter Residualwert (6.9403).
+
+    -   Eine symmetrische Verteilung der Residuen um 0 deutet auf eine gute Modellanpassung hin.
+
+### 3. Koeffizenten
+
+`Coefficients:`
+
+-   **Schätzungen der Modellparameter (`Estimate`):**
+
+    -   **(Intercept)**: Die geschätzte Konstante (an der die y-Achse geschnitten wird, wenn `hv_univ` = 0) ist 0.77617.
+
+    -   **`hv_univ`**: Der geschätzte Koeffizient ist −0.52448, was bedeutet, dass mit jeder Einheitserhöhung in `hv_univ` die abhängige Variable (`hv_power`) um 0.52448 Einheiten abnimmt (negativer Zusammenhang).
+
+-   **Standardfehler (`Std. Error`):**
+
+    -   Zeigt die Unsicherheit in den geschätzten Parametern.
+
+    -   **(Intercept)**: Standardfehler beträgt 0.03520.
+
+    -   **`hv_univ`**: Standardfehler beträgt 0.03334.
+
+-   **t-Wert:**
+
+    -   Gibt an, wie stark sich der geschätzte Koeffizient vom Nullwert (kein Effekt) unterscheidet.
+
+    -   Berechnet als: $t = \frac{\text{Estimate}}{\text{Std. Error}}$​
+
+        -   **(Intercept)**: $t = 22.05$.
+
+        -   **`hv_univ`**: $t=−15.73$.
+
+-   **p-Wert (`Pr(>|t|)`):**
+
+    -   Gibt die Wahrscheinlichkeit an, den beobachteten t-Wert (oder extremer) unter der Annahme zu erhalten, dass der wahre Koeffizient Null ist.
+
+    -   **`<2e-16`**: Sehr kleiner p-Wert (fast 0), daher ist der Effekt statistisch signifikant.
+
+    -   **Signifikanzcodes (`***`)**: Zeigen die Stärke der statistischen Signifikanz:
+
+        -   `***`: p \< 0.001 (sehr signifikant).
+
+### **4. Residual standard error**
+
+`Residual standard error: 1.663 on 1138 degrees of freedom   (9 Beobachtungen als fehlend gelöscht)`
+
+-   Beschreibt die Streuung der Residuen:
+
+    -   **1.663**: Die durchschnittliche Abweichung der tatsächlichen Werte von den vorhergesagten Werten.
+
+    -   **1138 degrees of freedom**: Freiheitsgrade des Modells, berechnet als: $Freiheitsgrade=n−p$
+
+        -   $n=1149$ (Gesamtanzahl der Beobachtungen).
+
+        -   $p=2$ (Anzahl der geschätzten Parameter: Achsenabschnitt + 1 Koeffizient).
+
+        -   9 Beobachtungen wurden wegen fehlender Werte ausgeschlossen.
+
+### **5. Multiple R-squared und Adjusted R-squared**
+
+`Multiple R-squared:  0.1786, Adjusted R-squared:  0.1779`
+
+-   **Multiple R-squared**:
+
+    -   Misst den Anteil der Varianz in der abhängigen Variable, der durch das Modell erklärt wird.
+
+    -   17,86% der Varianz in `hv_power` werden durch `hv_univ` erklärt.
+
+-   **Adjusted R-squared**:
+
+    -   Berücksichtigt die Anzahl der Variablen im Modell und die Freiheitsgrade.
+
+    -   **0.1779**: Minimal kleiner als das R-squared, was auf eine geringe Modellkomplexität hinweist.
+
+### **6. F-Statistic**
+
+`F-statistic: 247.5 on 1 and 1138 DF,  p-value: < 2.2e-16`
+
+-   **F-Statistik**:
+
+    -   Testet, ob das Modell insgesamt signifikant besser ist als ein Modell ohne Prädiktoren.
+
+    -   Berechnet als: $F = \frac{\text{Regression Mean Square}}{\text{Residual Mean Square}}$
+
+    -   **247.5**: Ein hoher F-Wert zeigt, dass das Modell signifikant ist.
+
+-   **p-Wert (`<2.2e-16`)**:
+
+    -   Der p-Wert für den F-Test ist nahezu 0, was bedeutet, dass das Modell signifikant ist.
+
+### 7. Standardisierte Koefizienten
+
+`Standardized Coefficients::`
+
+-   **hv_univ**: −0.4226345.
+
+    -   Nach Standardisierung zeigt der Koeffizient die Stärke und Richtung des Effekts von **hv_univ** auf **hv_power**, unabhängig von deren Messskalen.
+
+    -   Interpretation: Ein Standardabweichungsanstieg in **hv_univ** führt zu einem Rückgang von 0.4226345 Standardabweichungen in **hv_power**.
+
+# Multiple Lineare Regression
+
+## Polung der Variablen (Wiederholung)
+
+Um die Ergebnisse der multiplen linearen Regression besser und leichter interpretieren zu können, kann es hilfreich sein, wenn alle unabhängigen Variablen dieselbe Polung besitzen. Dies erfolgt mit dem Befehl `recode()` . In diesem Befehl geben wir zuerst die Variable an, die umkodiert werden soll und dann die Werte, sowie die neu zugeordneten Werte , welche ersetzt werden sollen. Zum Beispiel `'1' = 5`. Dabei wird der zuersetzende Wert zuerst angegeben, hier noch mit dem Zusatz `''`.
+
+Um die Variable in unseren Datensatz einzuspeichern verwenden wir den Befehl `mutate()`.
+
+```{r}
+frq(data$freehms)
+data <- data %>%
+  mutate(freehms = dplyr::recode(freehms, '1' = 5, '2' = 4, '3' = 3, '4' = 2, '5' = 1)) %>%
+  set_value_labels(freehms = c("Agree strongly" = 5, 
+                               "Agree" = 4, 
+                               "Neither agree nor disagree" = 3, 
+                               "Disagree"= 2, 
+                               "Disagree strongly" = 1))
+frq(data$freehms)
+```
+
+## Zentrierung der Variable
+
+Sollen bei einer multiplen Regression auch Interaktionseffekte berücksichtigt werden, so bietet es sich an die unabhängigen Variablen auf ihren Mittelwert zu zentrieren, um einer multikoliniearität vorzubeugen, welche mit der Hinzunahme eben jener Interaktionseffekte steigt.\
+Dies ist relativ leicht mit dem Befehl `scale()` möglich. Dieser Befehl ermöglicht die Zentrierung und Standardisierung der Varianz. Da wir die Variabeln nur zentrieren wollen, ergänzen wir in `scale()` noch die Option `scale(..., scale = FALSE)`.
+
+```{r}
+data <- data %>%
+  mutate(freehms = scale(freehms, scale = FALSE))
+```
+
+## Multiple Regression
+
+Die Multiple lineare Regression funktioniert analog zu der einfachen linearen Regression. Im Unterschied zu vorher geben wir weiter unabhängige Variablen mit dem `+`-Zeichen an.
+
+```{r}
+model <- data %>%   
+  filter(cntry == "GB") %>%
+  lm(hv_power ~ hv_univ + lrscale + freehms + pplfair, data= ., weights = anweight)  
+
+summary(model)
+lm.beta(model)
+
+model <- data %>%   
+  filter(cntry %in% c("GB","BG", "IT")) %>%
+  lm(hv_power ~ hv_univ + lrscale + freehms + pplfair + cntry, data= ., weights = anweight)  
+
+summary(model)
+lm.beta(model)
+data %>%
+  filter(cntry == "GB") %>%
+  filter(eisced != 55) %>%
+  select(trstsci, ppltrst, eisced) %>%
+  cor(., use = "pairwise.complete.obs", method = "pearson")
+```
+
+Im Ergebnis sehen wir kaum eine Verbesserung unseres Modelles im Vergleich zu der vorherigen Regression (siehe adjusted-R²). Dies liegt daran, dass die unabhängigen Variablen, die noch angefügt wurden, kaum zu der Beeinflussung von `hv_power` beitragen. Zu sehen ist das auch an den jeweiligen Signifikanzstatistiken. So besitzt lediglich `freehms` als neue Variable eine Verbindung zu der abhängigen Variable.
+
+Bei der multiplen Regression sollte immer abgeschätzt werden, ob es aus theoretischer Sicht Sinn macht eine unabhängige Variable mit einzubeziehen. Nach dem Einbezug sollte zudem die Modellgüte (adjusted-R²) hinterfragt werden. Mit diesen Werten können im weiteren die ersten Hypothesen überprüft werden.
+
+## Interaktionseffekt
+
+Der Interaktionseffekt beschreibt inwieweit mehrere unabhängige Variablen zusammengenommen auf die abhängige Variable wirken. Bisher betrachteten wir in der multiplen Regression immer folgende Formel:
+
+$$
+Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p + \epsilon
+$$
+
+$\beta$ = Einfluss einer unabhängigen Variable\
+$X$ = unabhängige Variable\
+$\epsilon$ = Fehler, nicht erklärbarer Einfluss
+
+Wollen wir nun eine Interaktion zwischen zwei unabhängigen Variablen betrachten, so ändert sich die Formel zu:
+
+$$
+Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \beta_3 (X_1*X_2) + \cdots + \beta_p X_p + \epsilon
+$$
+
+$\beta_3 (X_1*X_2)$ = Interaktionsterm
+
+Der Interkationsterm ergibt sich einfach aus der Multiplikation zwischen $X_1$ und $X_2$
+
+Um einen Interaktioneffekt zu berücksichtigen verwenden wir das Multiplaktionzeichen `*` wenn wir das Model generieren. Ob man einen Interaktionseffekt in das eigene Model einbaut oder nicht sollte zunächst aus theoretischen Überlegungen erfolgen.
+
+```{r}
+
+model <- data %>%   
+  filter(cntry == "GB") %>%
+  lm(hv_power ~ lrscale * freehms, data= ., weights = anweight)  
+
+summary(model)
+
+
+model <- data %>%   
+  filter(cntry == "GB") %>%
+  lm(hv_power ~ lrscale * freehms, data= ., weights = anweight)  
+
+summary(model)
+```
+
+```{r}
+model <- data %>%   
+  filter(cntry == "GB") %>%
+  filter(eisced != 55) %>%
+  lm(trstsci ~ ppltrst + eisced, data= ., weights = anweight)  
+
+summary(model)
+
+model <- data %>%   
+  filter(cntry == "GB") %>%
+  filter(eisced != 55) %>%
+  lm(trstsci ~ ppltrst * eisced, data= ., weights = anweight)  
+
+summary(model)
+```
+
+Mit dem Paket *predict3d* können wir uns die Regression auch grafisch ausgeben lassen.
+
+Eine Interpretation dieser Grafik kann sich sehr schwer gestalten, es muss berücksichtigt werden, dass versucht wird einen dreidimensionalen Raum in einem zweidimensionalen Raum darzustellen.
+
+```{r}
+
+model <- data %>%   
+  filter(cntry == "GB") %>%
+  filter(eisced != 55) %>%
+  lm(trstsci ~ ppltrst + eisced, data= ., weights = anweight)  
+
+ggPredict(model, show.point = FALSE, modx.values = seq(1,7,1), colorn = 7)
+
+
+model <- data %>%   
+  filter(cntry == "GB") %>%
+  filter(eisced != 55) %>%
+  lm(trstsci ~ ppltrst * eisced, data= ., weights = anweight)  
+
+ggPredict(model, show.point = FALSE, modx.values = seq(1,7,1))
+
+model <- data %>%   
+  filter(cntry == "GB") %>%
+  filter(eisced != 55) %>%
+  lm(trstsci ~ eisced * ppltrst, data= ., weights = anweight)  
+
+ggPredict(model, show.point = FALSE, modx.values = seq(1,10,1))
+```
+
+## Überprüfung der Vorraussetzung
+
+**Überprüfung der Multikolinearität:**\
+Für die Überprüfung der Multikolinieartät verwenden wir die Funktion `vif()` des *car*-Paketes. Eine wichtige Orientierung bietet hier der Wert 10. Sind die Wert größer als 10, so ist dies ein Anzeichen für Multikolinearität.
+
+```{r}
+vif(model)
+```
+
+**Überprüfung der Linearität:**\
+Um die Linearität zu Überprüfen können wir uns die Boxplots zur Hilfe nehmen. Sie geben uns eine gute Möglichkeit zu veranschaulichen in welchen Zusammenhang eine unabhängie zur abhängigen Variable steht. Dies haben wir schon im Skript zu Darstellung von Daten gemacht.
+
+```{r}
+data %>%
+  filter(cntry %in% c("BE", "CZ", "HU", "NL", "FR", "GB")) %>%
+  filter(!is.na(ppltrst)) %>%
+  filter(!is.na(trstsci)) %>%
+  ggplot(., aes(x = as.factor(ppltrst), y = trstsci)) +
+  geom_boxplot()
+```
+
+Alternativ kann man hier auch auf den Rainbow Test zurückgreifen:
+
+```{r}
+data %>%
+  filter(cntry %in% c("BE", "CZ", "HU", "NL", "FR", "GB")) %>%
+  filter(!is.na(ppltrst)) %>%
+  filter(!is.na(trstsci)) %>%
+  raintest(trstsci ~ ppltrst, data = .)
+
+```
+
+**Prüfung Varianzhomogenität und Normalverteilung der Residuen:**\
+Für diese Überprüfung verwenden wir einfach den Befehl `plot()`.
+
+```{r}
+plot(model)
+hist(model$residuals, breaks = seq(round(min(model$residuals), digits = 0)-0.5, round(max(model$residuals), digits = 0)+0.5, 1))
+```
