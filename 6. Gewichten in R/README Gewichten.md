@@ -1520,49 +1520,49 @@ data %>%
 ```
 
     ## Adding missing grouping variables: `cntry`[[1]]
-    ##Weighted Descriptive Statistics  
-    ##
-    ##                  hv_selfd   hv_power   hv_univ   anweight
-    ##--------------- ---------- ---------- --------- ----------
-    ##           Mean       0.40      -1.14      0.61       0.87
-    ##        Std.Dev       0.74       0.84      0.60       0.45
-    ##            Min      -2.12      -3.81     -2.21       0.27
-    ##         Median       0.40      -1.12      0.62       0.73
-    ##            Max       2.52       1.60      2.67       2.87
-    ##           MAD       0.71       0.81      0.56       0.29
-    ##            CV       1.82      -0.74      1.00       0.52
-    ##        N.Valid     960.34     959.98    961.80     962.94
-    ##      Pct.Valid      99.73      99.69     99.88     100.00
-    ##
-    ##[[2]]
-    ##Weighted Descriptive Statistics  
-    ##
-    ##                  hv_selfd   hv_power   hv_univ   anweight
-    ##--------------- ---------- ---------- --------- ----------
-    ##           Mean       0.49      -1.20      0.81       7.36
-    ##        Std.Dev       0.80       0.84      0.67       4.97
-    ##            Min      -2.00      -3.79     -1.71       1.57
-    ##         Median       0.50      -1.21      0.86       5.35
-    ##            Max       3.14       1.83      2.67      19.18
-    ##            MAD       0.81       0.78      0.64       3.39
-    ##             CV       1.62      -0.70      0.83       0.67
-    ##        N.Valid    5464.97    5470.24   5486.86    5508.56
-    ##      Pct.Valid      99.21      99.30     99.61     100.00
-    ##
-    ##[[3]]
-    ##Weighted Descriptive Statistics  
-    ##
-    ##                  hv_selfd   hv_power   hv_univ   anweight
-    ##--------------- ---------- ---------- --------- ----------
-    ##           Mean       0.14      -0.49      0.39       2.25
-    ##        Std.Dev       0.63       0.77      0.52       0.92
-    ##            Min      -4.44      -3.95     -1.76       0.79
-    ##         Median       0.17      -0.40      0.38       2.00
-    ##            Max       2.25       1.76      2.43       6.79
-    ##            MAD       0.60       0.67      0.49       0.72
-    ##             CV       4.54      -1.57      1.35       0.41
-    ##       N.Valid    5102.99    5098.02   5105.64    5159.97
-    ##      Pct.Valid      98.90      98.80     98.95     100.00
+    ## Weighted Descriptive Statistics  
+    ## 
+    ##                   hv_selfd   hv_power   hv_univ   anweight
+    ## --------------- ---------- ---------- --------- ----------
+    ##            Mean       0.40      -1.14      0.61       0.87
+    ##         Std.Dev       0.74       0.84      0.60       0.45
+    ##             Min      -2.12      -3.81     -2.21       0.27
+    ##          Median       0.40      -1.12      0.62       0.73
+    ##             Max       2.52       1.60      2.67       2.87
+    ##            MAD       0.71       0.81      0.56       0.29
+    ##             CV       1.82      -0.74      1.00       0.52
+    ##         N.Valid     960.34     959.98    961.80     962.94
+    ##       Pct.Valid      99.73      99.69     99.88     100.00
+    ## 
+    ## [[2]]
+    ## Weighted Descriptive Statistics  
+    ## 
+    ##                   hv_selfd   hv_power   hv_univ   anweight
+    ## --------------- ---------- ---------- --------- ----------
+    ##            Mean       0.49      -1.20      0.81       7.36
+    ##         Std.Dev       0.80       0.84      0.67       4.97
+    ##             Min      -2.00      -3.79     -1.71       1.57
+    ##          Median       0.50      -1.21      0.86       5.35
+    ##             Max       3.14       1.83      2.67      19.18
+    ##             MAD       0.81       0.78      0.64       3.39
+    ##              CV       1.62      -0.70      0.83       0.67
+    ##         N.Valid    5464.97    5470.24   5486.86    5508.56
+    ##       Pct.Valid      99.21      99.30     99.61     100.00
+    ## 
+    ## [[3]]
+    ## Weighted Descriptive Statistics  
+    ## 
+    ##                   hv_selfd   hv_power   hv_univ   anweight
+    ## --------------- ---------- ---------- --------- ----------
+    ##            Mean       0.14      -0.49      0.39       2.25
+    ##         Std.Dev       0.63       0.77      0.52       0.92
+    ##             Min      -4.44      -3.95     -1.76       0.79
+    ##          Median       0.17      -0.40      0.38       2.00
+    ##             Max       2.25       1.76      2.43       6.79
+    ##             MAD       0.60       0.67      0.49       0.72
+    ##              CV       4.54      -1.57      1.35       0.41
+    ##        N.Valid    5102.99    5098.02   5105.64    5159.97
+    ##       Pct.Valid      98.90      98.80     98.95     100.00
 
 Bei der Ausgabe mehrerer Variablen fällt auf, dass es auch immer die
 deskriptiven Statistiken des Gewichtungsparameters ausgibt. Dies kann
