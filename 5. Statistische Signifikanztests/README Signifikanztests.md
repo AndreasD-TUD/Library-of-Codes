@@ -4,7 +4,7 @@ Andreas Deim
 11 Februar, 2025
 
 - [Verwendete neue Befehle](#verwendete-neue-befehle)
-  - [Pakete laden](#pakete-laden)
+- [Pakete laden](#pakete-laden)
 - [Verteilungstests](#verteilungstests)
   - [Kolmogorov-Smirnov-Test](#kolmogorov-smirnov-test)
   - [Shapiro-Wilk-Test](#shapiro-wilk-test)
@@ -23,7 +23,7 @@ Andreas Deim
 
 ------------------------------------------------------------------------
 
-## Pakete laden
+# Pakete laden
 
 ``` r
 library(haven)
