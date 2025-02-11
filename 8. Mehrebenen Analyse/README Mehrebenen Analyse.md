@@ -197,7 +197,8 @@ model2 <- data %>%
 plot_model(model2, type = "re", show.values = TRUE, value.offset = .4)
 ```
 
-![](Mehrebenen-Analyse_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![download](https://github.com/user-attachments/assets/e3116abd-c8f6-4909-a1d8-ef48082fdc99)
+
 
 ``` r
 ranef(model2)
@@ -266,7 +267,8 @@ model3 <- data %>%
 plot_model(model3, type = "re", show.values = TRUE, value.offset = .4)
 ```
 
-![](Mehrebenen-Analyse_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![download](https://github.com/user-attachments/assets/24d55f43-2ebf-4c29-9991-4806b8ccc537)
+
 
 ``` r
 ranef(model3)
