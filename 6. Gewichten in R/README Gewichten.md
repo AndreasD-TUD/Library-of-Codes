@@ -365,13 +365,15 @@ Im folgenden ein Vergleich zwichen gewichteten und ungewichteten Daten
 qqnorm(data$hv_power)
 ```
 
-![](Gewichtung-in-R_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![download](https://github.com/user-attachments/assets/4b00f94c-c1fd-49cd-952b-ddf99d8550a6)
+
 
 ``` r
 svyqqmath(~hv_power, design=data_weigth_survey)
 ```
 
-![](Gewichtung-in-R_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
+![download](https://github.com/user-attachments/assets/8215dd08-027a-4759-ab63-5552de677a79)
+
 
 # Absolute und relative Häufigkeit mit `frq()`
 
