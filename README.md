@@ -30,6 +30,23 @@ Das Repository ist in verschiedene Ordner unterteilt, die jeweils einem spezifis
   - Histogramm
   - Speichern von Grafiken
   - Einführung ggplot2
+ 
+- **05_Statistische Signifikanztests**
+  - Verteilungstests
+  - Mittelwertvergleich
+
+- **06_Gewichten in R**
+  - Gewichten
+
+- **Korrelation, lineare und multiple Regression**
+  - Kovarianz
+  - Scatterplot
+  - Korrelation
+  - Einfache Lineare Regression
+  - Multiple lineare Regression
+
+- **08_Mehrebenen Analyse**
+  - Mehrebenenanalyse
 
 ---
 
@@ -39,23 +56,23 @@ Das Repository ist in verschiedene Ordner unterteilt, die jeweils einem spezifis
 - Installiere [R](https://cran.r-project.org/)
 - Installiere [RStudio](https://www.rstudio.com/)
 
-### Repository klonen
-Nutze folgendes Kommando, um das Repository zu klonen:
-```bash
-git clone https://github.com/dein-benutzername/dein-repository.git
-```
-
 ### Erste Datei ausführen
 1. Navigiere in den gewünschten Ordner, z. B. `01_Einführung`.
-2. Öffne die R-Skriptdatei in RStudio.
-3. Führe das Skript aus und folge den Anweisungen in den Kommentaren.
+2. Downloade die RMD-Skriptdatei.
+3. Öffne die RMD-Skriptdatei in RStudio.
+4. Führe das Skript aus.
+
+### README Dateien
+- In den README-Dateien finden sich die Skripte mit den Ausgaben des Skriptes
 
 ---
 
 ## 📚 Ressourcen
+- [R programming for beginners - R Programming 101 (Youtube-Empfehlung)](https://www.youtube.com/playlist?list=PLtL57Fdbwb_Chn-dNR0qBjH3esKS2MXY3)
 - [R Dokumentation](https://www.r-project.org/other-docs.html)
 - [R for Data Science (Buch)](https://r4ds.had.co.nz/)
 - [The R Graph Gallery](https://r-graph-gallery.com/)
+- [Text Mining with R (Buch)](https://www.tidytextmining.com/)
 
 ---
 
