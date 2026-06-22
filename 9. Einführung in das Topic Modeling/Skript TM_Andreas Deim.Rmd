@@ -1,0 +1,631 @@
+---
+title: "Einführung in das LDA Topic Modeling"
+author: "Andreas Deim"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+# Einführung in das LDA Topic Modeling
+
+....
+
+# Pakete laden
+
+Wichtig! Wenn Pakete noch nicht installiert sind, dann kann dies mit dem Befehl *install.packages("PAKTENAME")* nachgeholt werden
+
+```{r}
+#Für die Installation von ldatuning müssen folgende Befehle ausgeführt werden
+packageurl <- "https://cran.r-project.org/src/contrib/Archive/ldatuning/ldatuning_1.0.2.tar.gz"
+install.packages(c('Rmpfr', 'reshape2')) #Kann notwendig sein
+install.packages(packageurl, repos=NULL, type="source")
+
+
+#Paket für einlesen der Textdaten
+library(readtext)
+
+#Pakete zum Bearbeiten der Textdaten
+library(tidytext) 
+library(stringi) 
+library(SnowballC)
+
+#Pakete für die Durchfürhung und Evaluation des Topic Modeling
+library(tm)
+library(ldatuning)
+library(topicmodels)
+library(topicdoc)
+
+#Paket für die grafische Darstellung
+library(ggplot2)
+
+#Pakete die das Leben in R erleichtern
+library(dplyr) 
+library(tidyverse)
+library(sjmisc)
+```
+
+# Einlesen der Daten
+
+Der Datensatz, welcher hier beispielhaft verwendet werden soll, ist ein zufälliger Ausschnitt im Umfang von 4.000 Artikeln aus einem größeren Datensatz, der ungefähr 80.000 Zeitungsartikel von 8 Zeitungen zwischen 2016 und 2022 enthält.
+
+Der Datensatz enthält 11 Variablen:
+
+- Identifier: Eindeutige Kennzeichnung für jeden Artikel
+
+- database: Zeitung aus dem der Artikel kommt unterschieden in ...
+
+  - DMP - Dresdner Morgenpost
+
+  - HAZ - Hannoversche Allgemeine Zeitung
+
+  - KN - Kieler Nachrichten
+
+  - KSTA - Kölner Stadtanzeiger
+
+  - OSZ - Ostsee-Zeitung
+
+  - SVZ - Schweriner Volkszeitung
+
+  - SZO - Sächsiche Zeitung
+
+  - TAZ - taz. die tageszeitung
+
+- data: Erscheinungsdatum
+
+- year: Erscheinungsjahr
+
+- title: Zeitungstitel
+
+- subtitle: Untertitel
+
+- shortcut: Ausschnitt aus dem Zeitungsartikel
+
+- page: Seitenzahl in der Zeitung
+
+- ressort: Ressort
+
+- author: Zeitungsautor
+
+- text: Artikelinhalt
+
+```{r}
+
+data <- read.csv2("local_newspaper_sample.csv", header = T, sep = ";")
+
+#Zusätzlich zu den Datensatz lesen wir noch Listen für die Bereinigung ein
+stop_list <- read.table("bbalet_stopwords_de.txt", col.names = "word")
+sub_list <- read.table("Sublist.txt", header = T)
+prenom<- read.csv2("prenom.csv", header = T, sep = ",")
+substitute_table <- read.csv2("sub_word.csv", header=T) %>% distinct()
+```
+
+# Aufbereitung der Texte für die Analyse
+
+## Entfernen von Zeichen und filtern von Artikeln
+
+```{r}
+text_data_red <- data
+
+#Grundlegende Bereinigung. Entfernen oder Ersetzen von Zeichen
+text_data_red$text <- gsub("[.]", " ", text_data_red$text)
+text_data_red$text <- gsub("[,]", " ", text_data_red$text)
+text_data_red$text <- gsub("[—]", " ", text_data_red$text)
+text_data_red$text <- gsub("[-]", " ", text_data_red$text)	
+text_data_red$text <- gsub("[:]", " ", text_data_red$text)	
+text_data_red$text <- gsub("[!]", " ", text_data_red$text)	
+text_data_red$text <- gsub("[?]", " ", text_data_red$text)	
+text_data_red$text	  <- 	stringi::stri_trans_general(text_data_red$text, "latin-ascii")
+text_data_red$text <- gsub("[0-9]", "", text_data_red$text)	
+text_data_red$text <- gsub("[<>]", " ", text_data_red$text)	
+text_data_red$text <- gsub("[„]", "", text_data_red$text)	
+text_data_red$text <- gsub("[“]", "", text_data_red$text)
+text_data_red$text <- gsub("[()]", " ", text_data_red$text)
+
+#Texte entfernen die zu kurz sind
+text_data_red <- text_data_red %>% filter(nchar(text) >= 500)
+
+#Alle Buchstaben in das Kleinformat übersetzen
+text_data_red$text <- tolower(text_data_red$text)
+
+#Weitere Anpassung entsprechend des iterativ zyklischen Verfahrens
+text_data_red$text <- gsub("innen\\b", "", text_data_red$text)
+
+```
+
+## Entfernen und anpassen der Wörter
+
+```{r}
+#Die Texte in ihre ihre Bestandteile (also Wörter) zerlegen
+unnested_text <- text_data_red %>%  select(Identifier, text) %>% unnest_tokens(word, text) 
+
+#Die Stopwörter entfernen
+stopped_text <- unnested_text %>% anti_join(stop_list)
+
+#Entfernen von Wörtern, die kleiner als 3 sind
+stopped_text_wo_shorties <- stopped_text %>%  mutate(length=stri_length(word))%>% 
+  filter(length > 2) %>% select(-length)
+
+#Entfernen von Vornamen in den Texten
+prenom_sub <- prenom %>% top_n(4000, sum) %>% rename(word = prenom) %>% mutate(word = tolower(word))
+prenom_text <-  stopped_text_wo_shorties %>% anti_join(prenom_sub, by = "word")
+
+#Die Wörter auf ihren Wortstamm reduzieren
+stemmed_text <- prenom_text %>%  mutate(word = wordStem(word))
+
+#Wörter ersetzen, die nicht auf ihren Wortstamm reduziert werden konnten
+sub_text1 <- stemmed_text %>% 
+  left_join(substitute_table, by = "word", relationship = "many-to-one") %>% 
+  mutate(word = if_else(!is.na(sub), sub, word)) %>% 
+  select(-sub) 
+
+#Wörter entfernen, die sich entsprechend dem iterativen Zyklus als hinderlich für die Analyse erwiesen
+sub_text2 <- sub_text1 %>% anti_join(sub_list)
+
+#Veranschaulichung der entfernten und sublimierten Wörter
+figures <- rbind(unnested_text %>% mutate(corp = "unnested_text"),
+                 stopped_text %>% mutate(corp = "stopped_text"),
+                 stopped_text_wo_shorties %>% mutate(corp = "stopped_text_wo_shorties"),
+                 prenom_text %>% mutate(corp = "prenom_text"),
+                 stemmed_text %>% mutate(corp = "stemmed_text"),
+                 sub_text1 %>% mutate(corp = "sub_text1"),
+                 sub_text2 %>% mutate(corp = "sub_text2"))
+figures <- figures %>% group_by(corp) %>% 
+  mutate(n = n()) %>% 
+  distinct(word, .keep_all = T) %>% 
+  mutate(n_unique = n()) %>% 
+  select(-c(word, Identifier)) %>%
+  distinct()
+
+print(figures)
+  
+```
+
+## Term frequency - Inverse document frequency
+
+```{r}
+#Daten in eine lessbare Form für die Funktion bind_tf_idf bringen
+data_idf<- sub_text2 %>%
+  count(Identifier, word, sort = T) %>%
+  ungroup()
+
+#Term frequency und Inverse document frequency berechnen
+tf_idf <- data_idf  %>%
+  bind_tf_idf(word, Identifier, n) %>%
+  arrange(idf)
+#Den Datensatz aufrufen
+View(tf_idf)
+
+#Wörter entfernen, die nur sehr selten vorkommen (in diesem Fall in nur einem Dokument von 4.000)
+high_idf <-  tf_idf %>%
+  select(word, idf) %>%
+  unique()%>%
+  filter(idf > 8)
+
+sub_idf_high <-  sub_text2 %>% anti_join(high_idf, by = "word")
+
+#Wörter entfernen, die sehr häufig vorkommen (wie "Euro")
+small_idf <-  tf_idf %>%
+  select(word, idf) %>%
+  unique()%>%
+  filter(idf < 1.5)
+
+sub_idf_low <-  sub_idf_high %>% anti_join(small_idf, by = "word")
+
+#Artikel identifizieren, die zu 10% aus einem Wort bestehen.
+high_tf <-  tf_idf %>%
+  select(Identifier, tf) %>%
+  distinct() %>%
+  filter(tf >= 0.1)
+
+final_text <- sub_idf_low %>% 
+  anti_join(high_tf, by = "Identifier") 
+  
+#Die Wörter wieder zu einem Text zusammenführen
+new_data <- final_text %>%
+  group_by(Identifier) %>% 
+  summarise(new_text = paste(word, collapse = " ")) 
+
+
+#Und mit dem alten Coprus matchen
+new_data <- new_data %>%
+  left_join(text_data_red, by = "Identifier")
+
+
+#Nochmaliges Veranschaulichung der entfernten und sublimierten Wörter
+figures <- rbind(unnested_text %>% mutate(corp = "unnested_text"),
+                 stopped_text %>% mutate(corp = "stopped_text"),
+                 stopped_text_wo_shorties %>% mutate(corp = "stopped_text_wo_shorties"),
+                 prenom_text %>% mutate(corp = "prenom_text"),
+                 stemmed_text %>% mutate(corp = "stemmed_text"),
+                 sub_text1 %>% mutate(corp = "sub_text1"),
+                 sub_text2 %>% mutate(corp = "sub_text2"),
+                 final_text %>% mutate(corp = "final_text"))
+figures <- figures %>% group_by(corp) %>% 
+  mutate(n = n()) %>% 
+  distinct(word, .keep_all = T) %>% 
+  mutate(n_unique = n()) %>% 
+  select(-c(word, Identifier)) %>%
+  distinct()
+
+print(figures)
+```
+
+# Erste Analysen
+
+```{r}
+#Erstellen der 50 häufigsten Wörter
+wordcount <- new_data %>%
+  select(new_text) %>% 
+  unnest_tokens(word, new_text) %>% 
+  count(word, sort=T) %>%
+  slice_head(n = 50)
+
+wordcount
+
+#Erstellen der 50 häufigsten Wörter je Zeitung
+wordcount_db <- new_data %>% 
+  group_by(database) %>%
+  select(new_text, database) %>% 
+  unnest_tokens(word, new_text) %>% 
+  count(word, sort=T) %>%
+  slice_head(n = 50)
+
+wordcount_db
+
+#Bigramme ausgeben. n bestimmt die Anzahl der zusammenhängenden Wörter
+ngrams <- new_data %>% select(Identifier, new_text) %>% unnest_tokens(ngram, new_text, token="ngrams", n = 2) %>% count(ngram, sort=T)
+
+ngrams
+
+#tf_idf erneut berechnen und betrachten
+unnested_text_tf_idf <- new_data %>% 
+  select(Identifier, new_text) %>% 
+  unnest_tokens(word, new_text) %>%
+  count(Identifier, word, sort = T) %>%
+  ungroup()
+
+new_tf_idf <- unnested_text_tf_idf  %>%
+  bind_tf_idf(word, Identifier, n) %>%
+  arrange(idf)
+
+new_tf_idf
+```
+
+# Topic Modeling
+
+## Vorbereiten des Datensatzes
+
+```{r}
+topics_data <- new_data %>% select(Identifier, new_text) %>% rename(doc_id = Identifier, text = new_text)
+
+x <- DataframeSource(topics_data)
+corp 	<- VCorpus(x)
+tm_dtm = DocumentTermMatrix(corp)
+```
+
+## Schätzen der Topicanzahl
+
+```{r}
+result <- FindTopicsNumber(
+  tm_dtm,
+  topics = seq(from = 10, to = 100, by = 10),
+  metrics = c("CaoJuan2009", "Deveaud2014", "Griffiths2004","Arun2010"),
+  method = "Gibbs",
+  mc.cores = 4L,
+  verbose = TRUE
+)
+
+FindTopicsNumber_plot(result)	
+```
+
+## Durchführung des Topic Modeling
+
+```{r}
+k_sub<- 40 
+alpha_sub<-0.1/k_sub
+beta_sub<-200/ncol(tm_dtm)
+ldacontrol <- list(alpha=alpha_sub
+                   ,delta = beta_sub
+                   ,iter = 1000
+                   ,burnin = 100                           
+                   ,keep = 50
+                   ,nstart = 1
+                   ,best = TRUE
+                   ,seed = 42
+)
+tm_fit_200_01 <- LDA(tm_dtm, k=k_sub, method="Gibbs", control = ldacontrol)
+
+k_sub<- 40 
+alpha_sub<-1/k_sub
+beta_sub<-200/ncol(tm_dtm)
+ldacontrol <- list(alpha=alpha_sub
+                   ,delta = beta_sub
+                   ,iter = 1000
+                   ,burnin = 100                           
+                   ,keep = 50
+                   ,nstart = 1
+                   ,best = TRUE
+                   ,seed = 42
+)
+
+tm_fit_200_1 <- LDA(tm_dtm, k=k_sub, method="Gibbs", control = ldacontrol)
+k_sub<- 40 
+alpha_sub<-10/k_sub
+beta_sub<-200/ncol(tm_dtm)
+ldacontrol <- list(alpha=alpha_sub
+                   ,delta = beta_sub
+                   ,iter = 1000
+                   ,burnin = 100                           
+                   ,keep = 50
+                   ,nstart = 1
+                   ,best = TRUE
+                   ,seed = 42
+)
+tm_fit_200_10 <- LDA(tm_dtm, k=k_sub, method="Gibbs", control = ldacontrol)
+
+
+#----- Variation von beta ----
+k_sub<- 40 
+alpha_sub<-0.1/k_sub
+beta_sub<-2000/ncol(tm_dtm)
+ldacontrol <- list(alpha=alpha_sub
+                   ,delta = beta_sub
+                   ,iter = 1000
+                   ,burnin = 100                           
+                   ,keep = 50
+                   ,nstart = 1
+                   ,best = TRUE
+                   ,seed = 42
+)
+tm_fit_2000_01 <- LDA(tm_dtm, k=k_sub, method="Gibbs", control = ldacontrol)
+```
+
+## Testen der Hyperparameter
+
+```{r}
+t_200_01_dia <- topic_diagnostics(tm_fit_200_01, tm_dtm)
+t_200_1_dia <- topic_diagnostics(tm_fit_200_1, tm_dtm)
+t_200_10_dia <- topic_diagnostics(tm_fit_200_10, tm_dtm)
+t_2000_01_dia <- topic_diagnostics(tm_fit_2000_01, tm_dtm)
+```
+
+### Ausgabe der Wort-Topic Gewichte
+
+...
+
+Am Ende plotten wir die Wortverteilung in einem Topic. Da die Ausgabe bei mehreren Topics unübersichtlich ist, speichern wir die Grafik als eigenständige Datei mit ggsave(). Für die Interpretation ist zu berücksichtigen, dass in jedem Topic jedes Wort vorkommt und die Summe der Häufigkeiten der Wörter immer 1 ergibt.
+
+```{r}
+tm_beta_terms_01 <- tidy(tm_fit_200_01, matrix = "beta") %>%
+  group_by(topic) %>%
+  top_n(20, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta)
+
+#Dieser Block dient dafür den Topics einen vorläufgen Namen zu geben. Er besteht aus den ersten drei Wörtern, die in einem Topic vorkommen. Das wird im folgenden für jede Variante wiederholt
+topic_names_01 <- tm_beta_terms_01  %>% group_by(topic) %>% 
+  top_n(3)        %>% 
+  select(-c(beta)) %>% 
+  summarise(top_name = paste(term, collapse=", ")) %>% 
+  mutate(t_name = paste(topic, top_name, sep = " - ")) %>%
+  select(topic, t_name) %>%
+  rename(top_name = t_name)
+tm_beta_terms_01 <- tm_beta_terms_01 %>% full_join(topic_names_01) %>% select(-c(topic)) %>% rename(topic = top_name)
+#----------------------------
+
+tm_beta_terms_1 <- tidy(tm_fit_200_1, matrix = "beta") %>%
+  group_by(topic) %>%
+  top_n(20, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta)
+
+topic_names_1 <- tm_beta_terms_1  %>% group_by(topic) %>% 
+  top_n(3)        %>% 
+  select(-c(beta)) %>% 
+  summarise(top_name = paste(term, collapse=", ")) %>% 
+  mutate(t_name = paste(topic, top_name, sep = " - ")) %>%
+  select(topic, t_name) %>%
+  rename(top_name = t_name)
+tm_beta_terms_1 <- tm_beta_terms_1 %>% full_join(topic_names_1) %>% select(-c(topic)) %>% rename(topic = top_name)
+#----------------------------
+
+tm_beta_terms_10 <- tidy(tm_fit_200_10, matrix = "beta") %>%
+  group_by(topic) %>%
+  top_n(20, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta)
+
+topic_names_10 <- tm_beta_terms_10  %>% group_by(topic) %>% 
+  top_n(3)        %>% 
+  select(-c(beta)) %>% 
+  summarise(top_name = paste(term, collapse=", ")) %>% 
+  mutate(t_name = paste(topic, top_name, sep = " - ")) %>%
+  select(topic, t_name) %>%
+  rename(top_name = t_name)
+tm_beta_terms_10 <- tm_beta_terms_10 %>% full_join(topic_names_10) %>% select(-c(topic)) %>% rename(topic = top_name)
+#----------------------------
+
+tm_beta_terms_2000_01 <- tidy(tm_fit_2000_01, matrix = "beta") %>%
+  group_by(topic) %>%
+  top_n(20, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta)
+
+topic_names_2000_01 <- tm_beta_terms_2000_01  %>% group_by(topic) %>% 
+  top_n(3)        %>% 
+  select(-c(beta)) %>% 
+  summarise(top_name = paste(term, collapse=", ")) %>% 
+  mutate(t_name = paste(topic, top_name, sep = " - ")) %>%
+  select(topic, t_name) %>%
+  rename(top_name = t_name)
+tm_beta_terms_2000_01 <- tm_beta_terms_2000_01 %>% full_join(topic_names_2000_01) %>% select(-c(topic)) %>% rename(topic = top_name)
+#----------------------------
+tm_beta_terms_01 %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE, fill ="#00305d")  +
+  facet_wrap(~topic, scales = "free") +
+  theme(legend.position = "none", strip.text.x = element_text(size = 5, face = "bold"), axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.text.y = element_text(size = 5), axis.title.y = element_text(size = 5)) +
+  scale_y_reordered()
+ggsave("tm_beta_01.png", width = 15, height = 10)
+
+tm_beta_terms_1 %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE, fill ="#00305d")  +
+  facet_wrap(~topic, scales = "free") +
+  theme(legend.position = "none", strip.text.x = element_text(size = 5, face = "bold"), axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.text.y = element_text(size = 5), axis.title.y = element_text(size = 5)) +
+  scale_y_reordered()
+ggsave("tm_beta_1.png", width = 15, height = 10)
+
+tm_beta_terms_10 %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE, fill ="#00305d")  +
+  facet_wrap(~topic, scales = "free") +
+  theme(legend.position = "none", strip.text.x = element_text(size = 5, face = "bold"), axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.text.y = element_text(size = 5), axis.title.y = element_text(size = 5)) +
+  scale_y_reordered()
+ggsave("tm_beta_10.png", width = 15, height = 10)
+
+tm_beta_terms_2000_01 %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE, fill ="#00305d")  +
+  facet_wrap(~topic, scales = "free") +
+  theme(legend.position = "none", strip.text.x = element_text(size = 5, face = "bold"), axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.text.y = element_text(size = 5), axis.title.y = element_text(size = 5)) +
+  scale_y_reordered()
+ggsave("tm_beta_2000_01.png", width = 15, height = 10)
+```
+
+### Ausgabe der Dokument-Topic-Gewichte
+
+```{r}
+tm_gamma_01 <-   tidy(tm_fit_200_01, matrix = "gamma") %>% 
+  full_join(topic_names_01) %>% 
+  select(-c(topic)) %>% 
+  rename(topic= top_name)
+
+tm_gamma_1 <-   tidy(tm_fit_200_1, matrix = "gamma") %>% 
+  full_join(topic_names_1) %>% 
+  select(-c(topic)) %>% 
+  rename(topic= top_name)
+
+tm_gamma_10 <-   tidy(tm_fit_200_10, matrix = "gamma") %>% 
+  full_join(topic_names_10) %>% 
+  select(-c(topic)) %>% 
+  rename(topic= top_name)
+
+#----------Grafische Ausgabe----------
+
+ggplot(tm_gamma_01, aes(gamma, fill = as.factor(topic))) +
+  geom_histogram(show.legend = F ,fill ="#00305d") +
+  facet_wrap(~ topic, ncol = 5) +
+  scale_y_log10() +
+  labs( title = "Wahrscheinlichkeitsverteilung für jedes Topic", y = "Anzahl Dokumente", x = expression(gamma)) +
+  theme(legend.position = "none", strip.text.x = element_text(size = 5, face = "bold"), axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.text.y = element_text(size = 5), axis.title.y = element_text(size = 5))
+ggsave("tm_gamma_01.png", width = 15, height = 10)
+
+ggplot(tm_gamma_1, aes(gamma, fill = as.factor(topic))) +
+  geom_histogram(show.legend = F ,fill ="#00305d") +
+  facet_wrap(~ topic, ncol = 5) +
+  scale_y_log10() +
+  labs( title = "Wahrscheinlichkeitsverteilung für jedes Topic", y = "Anzahl Dokumente", x = expression(gamma)) +
+  theme(legend.position = "none", strip.text.x = element_text(size = 5, face = "bold"), axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.text.y = element_text(size = 5), axis.title.y = element_text(size = 5))
+ggsave("tm_gamma_1.png", width = 15, height = 10)
+
+ggplot(tm_gamma_10, aes(gamma, fill = as.factor(topic))) +
+  geom_histogram(show.legend = F ,fill ="#00305d") +
+  facet_wrap(~ topic, ncol = 5) +
+  scale_y_log10() +
+  labs( title = "Wahrscheinlichkeitsverteilung für jedes Topic", y = "Anzahl Dokumente", x = expression(gamma)) +
+  theme(legend.position = "none", strip.text.x = element_text(size = 5, face = "bold"), axis.text.x = element_text(size = 5), axis.title.x = element_text(size = 5), axis.text.y = element_text(size = 5), axis.title.y = element_text(size = 5))
+ggsave("tm_gamma_10.png", width = 15, height = 10)
+```
+
+### Top Artikel der jeweiligen Topics
+
+```{r}
+doc_titel <- new_data %>% select(c("Identifier", "title", "text")) %>% rename(document = Identifier)
+
+top_01 <- tm_gamma_01 %>% group_by(topic) %>% arrange(desc(gamma), .by_group = T) %>% slice_head(n = 40) %>% left_join(doc_titel, by = "document")
+
+view(top_01)
+
+new_data %>% filter(Identifier == "KSTA__2b0497227fcbb1467ab722c710b24217598ded84") %>% pull(text) %>% cat()
+```
+
+# Nachbearbeitung
+
+## Benennung und Charakterisierung der Topics
+
+```{r}
+topic_label <- topic_names_01 %>% mutate(new_name = "-")
+write.csv2(topic_label, "topic_labels.csv", row.names=F)
+
+topic_label_new <- read.csv2("topic_labels_new.csv", header = T)
+topic_names_01_new <- topic_label_new %>% mutate(top_name = new_name) %>% select(-new_name)
+```
+
+## Ausreiser entfernen
+
+```{r}
+outlier <- new_data %>% filter(grepl("^Heute$", title, ignore.case = T)) %>% select(Identifier, title) 
+
+new_data <- new_data %>% anti_join(outlier, by = "Identifier")
+```
+
+# Darstellungsmöglichkeiten der Topics
+
+## Beispiel Zeitverlauf der Topics
+
+```{r}
+gamma_lo <- tm_gamma_01 %>% 
+  spread(topic, gamma) %>% 
+  rename(Identifier = document) %>%
+  rename_at(vars(topic_label_new$top_name), ~ topic_label_new$new_name)
+
+date_of_document <- new_data %>% select(Identifier, date, database)
+date_of_document <- left_join(gamma_lo, date_of_document, by = "Identifier")
+
+
+mean_gamma <- date_of_document %>%
+  select(!Identifier) %>%
+  group_by(date, database) %>%
+  summarise_at(vars(starts_with(c("1","2","3","4","5","6","7","8","9"))), mean) %>%
+  mutate(date = as.Date(date, "%Y-%m-%d")) %>%
+  gather(topic, value, -date, -database)
+
+
+mean_gamma %>%
+  filter(topic == "4 - corona, mask, pandemi") %>%
+  ggplot(aes(date)) + 
+  geom_line(aes(y = value, x = date), size = 1, color = "#00305d") + 
+  xlab("Jahr") +
+  ylab("Wahrscheinlichkeit des Themas in den Zeitungen") +
+  labs(title = "Topic: Corona-Pandemie")
+
+
+mean_gamma %>%
+  ggplot(aes(y = value, x = date)) + 
+  geom_point(size = 1, color = "#00305d") +
+  geom_line(size = 0.5, color = "#00305d") +
+  geom_hline(aes(yintercept = 1/40), size = 0.5, linetype = "dashed", color = "darkred") +
+  facet_wrap(~topic) +
+  theme(plot.title = element_text(size=40, face = "bold", hjust = 0.5), 
+        legend.text = element_text(size = 25), 
+        legend.title = element_text(size = 25),
+        legend.position = "right",
+        axis.text = element_text(size = 20),
+        axis.title = element_text(size = 25, face = "bold"),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "#00305d", fill = NA),
+        panel.grid.major = element_line(colour = "#00305d"),
+        strip.background = element_rect(colour = "black", fill = "#00305d"),
+        strip.text.x = element_text(colour = "white", face = "bold"),
+        strip.text = element_text(size=20)) +
+  labs(title = "Darstellung der Topicverteilung über den Zeitraum", 
+       x = "Jahr", 
+       y = "Relativer Anteil", 
+       color = "Zeitung")
+ggsave("topics_timerelated.png", width = 50, height = 25, limitsize = FALSE)
+
+```
